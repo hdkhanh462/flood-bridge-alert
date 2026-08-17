@@ -8,6 +8,7 @@ import {
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
 import { useQuery } from "@tanstack/react-query";
 
+import { NotificationToggle } from "@/components/notification-toggle";
 import { orpc } from "@/utils/orpc";
 
 import type { Route } from "./+types/bridges";
@@ -33,7 +34,10 @@ export default function Bridges() {
 
 	return (
 		<div className="container mx-auto max-w-3xl px-4 py-6">
-			<h1 className="mb-4 font-semibold text-2xl">Trạng thái cầu tràn</h1>
+			<div className="mb-4 flex items-center justify-between">
+				<h1 className="font-semibold text-2xl">Trạng thái cầu tràn</h1>
+				<NotificationToggle />
+			</div>
 
 			{bridges.isLoading ? (
 				<div className="grid gap-4">

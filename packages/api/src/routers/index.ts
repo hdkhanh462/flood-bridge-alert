@@ -2,6 +2,7 @@ import type { RouterClient } from "@orpc/server";
 
 import { protectedProcedure, publicProcedure } from "../index";
 import { bridgeRouter } from "./bridge";
+import { pushSubscriptionRouter } from "./push-subscription";
 import { todoRouter } from "./todo";
 
 export const appRouter = {
@@ -15,6 +16,7 @@ export const appRouter = {
 		};
 	}),
 	bridge: bridgeRouter,
+	pushSubscription: pushSubscriptionRouter,
 	todo: todoRouter,
 };
 export type AppRouter = typeof appRouter;

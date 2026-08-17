@@ -10,6 +10,9 @@ export const env = createEnv({
 		CORS_ORIGIN: z.url(),
 		PORT: z.coerce.number().default(3000),
 		BLYNK_WEBHOOK_TOKEN: z.string().min(1),
+		VAPID_PUBLIC_KEY: z.string().min(1),
+		VAPID_PRIVATE_KEY: z.string().min(1),
+		VAPID_SUBJECT: z.string().min(1),
 		NODE_ENV: z
 			.enum(["development", "production", "test"])
 			.default("development"),

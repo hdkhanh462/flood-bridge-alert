@@ -5,6 +5,7 @@ import prisma, {
 import { z } from "zod";
 
 import { recordAlertIfNeeded } from "../flood/alert";
+import { sendAlertPush } from "../flood/push";
 import { determineBridgeStatus } from "../flood/status";
 
 export const blynkWebhookInputSchema = z.object({
@@ -20,7 +21,7 @@ export class BridgeNotFoundError extends Error {}
 export async function ingestBlynkReading(
 	input: BlynkWebhookInput,
 ): Promise<WaterLevelReading> {
-	return await prisma.$transaction(async (tx) => {
+	const result = await prisma.$transaction(async (tx) => {
 		const bridge = await tx.bridge.findUnique({
 			where: { id: input.bridgeId },
 			include: { threshold: true },
@@ -44,10 +45,17 @@ export async function ingestBlynkReading(
 			},
 		});
 
-		if (bridge.threshold) {
-			await recordAlertIfNeeded(tx, input.bridgeId, status, recordedAt);
-		}
+		const alert = bridge.threshold
+			? await recordAlertIfNeeded(tx, input.bridgeId, status, recordedAt)
+			: null;
 
-		return reading;
+		return { reading, alert, bridgeName: bridge.name };
 	});
+
+	// Gửi push ngoài transaction vì đây là I/O bên ngoài, không nên giữ transaction DB chờ nó.
+	if (result.alert) {
+		await sendAlertPush(result.bridgeName, result.alert);
+	}
+
+	return result.reading;
 }
