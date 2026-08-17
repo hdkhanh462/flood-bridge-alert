@@ -37,7 +37,7 @@ model WaterLevelReading {
   bridgeId   String
   bridge     Bridge       @relation(fields: [bridgeId], references: [id], onDelete: Cascade)
   level      Float
-  status     BridgeStatus
+  status     BridgeStatus @default(SAFE)
   recordedAt DateTime     @default(now())
 
   @@index([bridgeId, recordedAt])
