@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-lyra",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@flood-bridge-alert/ui/components",
+    "utils": "@flood-bridge-alert/ui/lib/utils",
+    "hooks": "@flood-bridge-alert/ui/hooks",
+    "lib": "@flood-bridge-alert/ui/lib",
+    "ui": "@flood-bridge-alert/ui/components"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+}

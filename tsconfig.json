@@ -1,0 +1,3 @@
+{
+  "extends": "@flood-bridge-alert/config/tsconfig.base.json"
+}

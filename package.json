@@ -1,0 +1,34 @@
+{
+  "name": "flood-bridge-alert",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "dev:web": "turbo run dev -F web --",
+    "dev:server": "turbo run dev -F server --",
+    "db:push": "turbo run db:push -F @flood-bridge-alert/db --",
+    "db:studio": "turbo run db:studio -F @flood-bridge-alert/db --",
+    "db:generate": "turbo run db:generate -F @flood-bridge-alert/db --",
+    "db:migrate": "turbo run db:migrate -F @flood-bridge-alert/db --",
+    "check": "biome check --write ."
+  },
+  "dependencies": {
+    "@flood-bridge-alert/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.6",
+    "@flood-bridge-alert/config": "workspace:*",
+    "@types/node": "catalog:",
+    "turbo": "^2.10.7",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@11.18.0"
+}
