@@ -1,0 +1,56 @@
+enum BridgeStatus {
+  SAFE
+  WARNING
+  DANGER
+}
+
+model Bridge {
+  id        String   @id @default(cuid())
+  name      String
+  location  String?
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  threshold Threshold?
+  readings  WaterLevelReading[]
+  alerts    AlertHistory[]
+
+  @@map("bridge")
+}
+
+model Threshold {
+  id         String   @id @default(cuid())
+  bridgeId   String   @unique
+  bridge     Bridge   @relation(fields: [bridgeId], references: [id], onDelete: Cascade)
+  safeMax    Float
+  warningMax Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("threshold")
+}
+
+model WaterLevelReading {
+  id         String       @id @default(cuid())
+  bridgeId   String
+  bridge     Bridge       @relation(fields: [bridgeId], references: [id], onDelete: Cascade)
+  level      Float
+  status     BridgeStatus
+  recordedAt DateTime     @default(now())
+
+  @@index([bridgeId, recordedAt])
+  @@map("water_level_reading")
+}
+
+model AlertHistory {
+  id        String       @id @default(cuid())
+  bridgeId  String
+  bridge    Bridge       @relation(fields: [bridgeId], references: [id], onDelete: Cascade)
+  status    BridgeStatus
+  createdAt DateTime     @default(now())
+
+  @@index([bridgeId, createdAt])
+  @@map("alert_history")
+}
