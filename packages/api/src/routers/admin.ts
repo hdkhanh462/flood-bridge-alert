@@ -124,4 +124,17 @@ export const adminRouter = {
 				});
 			}),
 	},
+
+	pushSubscription: {
+		list: adminProcedure.handler(async () => {
+			return await prisma.pushSubscription.findMany({
+				orderBy: { createdAt: "desc" },
+				take: 100,
+				include: {
+					user: { select: { email: true, isAnonymous: true } },
+					bridges: { select: { id: true, name: true } },
+				},
+			});
+		}),
+	},
 };

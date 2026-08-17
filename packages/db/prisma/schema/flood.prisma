@@ -13,9 +13,10 @@ model Bridge {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  threshold Threshold?
-  readings  WaterLevelReading[]
-  alerts    AlertHistory[]
+  threshold         Threshold?
+  readings          WaterLevelReading[]
+  alerts            AlertHistory[]
+  pushSubscriptions PushSubscription[]
 
   @@map("bridge")
 }
@@ -63,6 +64,7 @@ model PushSubscription {
   p256dh    String
   auth      String
   createdAt DateTime @default(now())
+  bridges   Bridge[]
 
   @@index([userId])
   @@map("push_subscription")

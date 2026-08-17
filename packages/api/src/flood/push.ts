@@ -14,7 +14,15 @@ export async function sendAlertPush(
 	bridgeName: string,
 	alert: AlertHistory,
 ): Promise<void> {
-	const subscriptions = await prisma.pushSubscription.findMany();
+	// Subscription không chọn cầu nào (bridges rỗng) nghĩa là muốn nhận cảnh báo của TẤT CẢ các cầu.
+	const subscriptions = await prisma.pushSubscription.findMany({
+		where: {
+			OR: [
+				{ bridges: { none: {} } },
+				{ bridges: { some: { id: alert.bridgeId } } },
+			],
+		},
+	});
 	if (subscriptions.length === 0) return;
 
 	const payload = JSON.stringify({

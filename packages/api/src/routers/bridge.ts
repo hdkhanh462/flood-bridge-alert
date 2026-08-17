@@ -44,4 +44,42 @@ export const bridgeRouter = {
 			}
 			return toBridgeSummary(bridge);
 		}),
+
+	history: publicProcedure
+		.input(
+			z.object({
+				id: z.string().min(1),
+				limit: z.number().int().min(1).max(500).default(100),
+			}),
+		)
+		.handler(async ({ input }) => {
+			const bridge = await prisma.bridge.findUnique({
+				where: { id: input.id },
+				include: { threshold: true },
+			});
+			if (!bridge) {
+				throw new ORPCError("NOT_FOUND");
+			}
+			const readings = await prisma.waterLevelReading.findMany({
+				where: { bridgeId: input.id },
+				orderBy: { recordedAt: "desc" },
+				take: input.limit,
+			});
+			return { threshold: bridge.threshold, readings: readings.reverse() };
+		}),
+
+	alerts: publicProcedure
+		.input(
+			z.object({
+				id: z.string().min(1),
+				limit: z.number().int().min(1).max(100).default(20),
+			}),
+		)
+		.handler(async ({ input }) => {
+			return await prisma.alertHistory.findMany({
+				where: { bridgeId: input.id },
+				orderBy: { createdAt: "desc" },
+				take: input.limit,
+			});
+		}),
 };

@@ -8,7 +8,7 @@ import {
 } from "@flood-bridge-alert/ui/components/card";
 import { Input } from "@flood-bridge-alert/ui/components/input";
 import { Label } from "@flood-bridge-alert/ui/components/label";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2 } from "lucide-react";
 import { type FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router";
@@ -43,6 +43,7 @@ export function meta(_: Route.MetaArgs) {
 export default function Admin() {
 	const { data: session, isPending } = authClient.useSession();
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const isAdmin = session?.user.role === "admin";
 
 	useEffect(() => {
@@ -76,6 +77,56 @@ export default function Admin() {
 			},
 		}),
 	);
+
+	const devices = useQuery({
+		...orpc.admin.pushSubscription.list.queryOptions(),
+		enabled: isAdmin,
+	});
+
+	const users = useQuery({
+		queryKey: ["admin-users"],
+		queryFn: async () => {
+			const result = await authClient.admin.listUsers({
+				query: { limit: 50, sortBy: "createdAt", sortDirection: "desc" },
+			});
+			if (result.error) throw new Error(result.error.message);
+			return result.data;
+		},
+		enabled: isAdmin,
+	});
+	const invalidateUsers = () =>
+		queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+
+	const toggleRole = useMutation({
+		mutationFn: async ({
+			userId,
+			role,
+		}: {
+			userId: string;
+			role: "admin" | "user";
+		}) => {
+			const result = await authClient.admin.setRole({ userId, role });
+			if (result.error) throw new Error(result.error.message);
+			return result.data;
+		},
+		onSuccess: invalidateUsers,
+	});
+	const banUser = useMutation({
+		mutationFn: async (userId: string) => {
+			const result = await authClient.admin.banUser({ userId });
+			if (result.error) throw new Error(result.error.message);
+			return result.data;
+		},
+		onSuccess: invalidateUsers,
+	});
+	const unbanUser = useMutation({
+		mutationFn: async (userId: string) => {
+			const result = await authClient.admin.unbanUser({ userId });
+			if (result.error) throw new Error(result.error.message);
+			return result.data;
+		},
+		onSuccess: invalidateUsers,
+	});
 
 	function handleCreateBridge(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -236,7 +287,7 @@ export default function Admin() {
 				)}
 			</div>
 
-			<Card>
+			<Card className="mb-6">
 				<CardHeader>
 					<CardTitle>Lịch sử cảnh báo gần đây</CardTitle>
 				</CardHeader>
@@ -256,6 +307,112 @@ export default function Admin() {
 									<span>{BRIDGE_STATUS_LABEL[alert.status]}</span>
 									<span className="text-muted-foreground">
 										{new Date(alert.createdAt).toLocaleString("vi-VN")}
+									</span>
+								</li>
+							))}
+						</ul>
+					)}
+				</CardContent>
+			</Card>
+
+			<Card className="mb-6">
+				<CardHeader>
+					<CardTitle>Người dùng</CardTitle>
+					<CardDescription>
+						Bao gồm cả người dùng ẩn danh (chỉ đăng ký nhận thông báo)
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					{users.isLoading ? (
+						<p className="text-muted-foreground">Đang tải...</p>
+					) : users.data?.users.length === 0 ? (
+						<p className="text-muted-foreground">Chưa có người dùng nào.</p>
+					) : (
+						<ul className="space-y-2">
+							{users.data?.users.map((user) => (
+								<li
+									key={user.id}
+									className="flex items-center justify-between border-b pb-2 text-sm"
+								>
+									<div>
+										<span className="font-medium">
+											{(user as { isAnonymous?: boolean }).isAnonymous
+												? "Người dùng ẩn danh"
+												: user.email}
+										</span>
+										{user.banned ? (
+											<span className="ml-2 rounded-full bg-red-500/15 px-2 py-0.5 text-red-600 text-xs dark:text-red-400">
+												Đã khóa
+											</span>
+										) : null}
+									</div>
+									<div className="flex items-center gap-2">
+										<Button
+											variant="outline"
+											size="xs"
+											disabled={toggleRole.isPending}
+											onClick={() =>
+												toggleRole.mutate({
+													userId: user.id,
+													role: user.role === "admin" ? "user" : "admin",
+												})
+											}
+										>
+											{user.role === "admin"
+												? "Bỏ quyền admin"
+												: "Cấp quyền admin"}
+										</Button>
+										<Button
+											variant="outline"
+											size="xs"
+											disabled={banUser.isPending || unbanUser.isPending}
+											onClick={() =>
+												user.banned
+													? unbanUser.mutate(user.id)
+													: banUser.mutate(user.id)
+											}
+										>
+											{user.banned ? "Mở khóa" : "Khóa"}
+										</Button>
+									</div>
+								</li>
+							))}
+						</ul>
+					)}
+				</CardContent>
+			</Card>
+
+			<Card>
+				<CardHeader>
+					<CardTitle>Thiết bị nhận thông báo</CardTitle>
+					<CardDescription>
+						Danh sách push subscription đã đăng ký
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					{devices.isLoading ? (
+						<p className="text-muted-foreground">Đang tải...</p>
+					) : devices.data?.length === 0 ? (
+						<p className="text-muted-foreground">
+							Chưa có thiết bị nào đăng ký.
+						</p>
+					) : (
+						<ul className="space-y-2">
+							{devices.data?.map((device) => (
+								<li
+									key={device.id}
+									className="flex items-center justify-between border-b pb-2 text-sm"
+								>
+									<span>
+										{device.user.isAnonymous ? "Ẩn danh" : device.user.email}
+									</span>
+									<span className="text-muted-foreground">
+										{device.bridges.length === 0
+											? "Tất cả các cầu"
+											: device.bridges.map((bridge) => bridge.name).join(", ")}
+									</span>
+									<span className="text-muted-foreground">
+										{new Date(device.createdAt).toLocaleString("vi-VN")}
 									</span>
 								</li>
 							))}

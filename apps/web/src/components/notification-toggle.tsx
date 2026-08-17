@@ -1,6 +1,7 @@
 import { env } from "@flood-bridge-alert/env/web";
 import { Button } from "@flood-bridge-alert/ui/components/button";
-import { useMutation } from "@tanstack/react-query";
+import { Checkbox } from "@flood-bridge-alert/ui/components/checkbox";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Bell, BellOff } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -20,25 +21,46 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
 
 export function NotificationToggle() {
 	const [supported, setSupported] = useState(false);
-	const [subscribed, setSubscribed] = useState(false);
+	const [endpoint, setEndpoint] = useState<string | null>(null);
+	const [showSettings, setShowSettings] = useState(false);
+	const subscribed = endpoint !== null;
 
 	useEffect(() => {
 		if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
 		setSupported(true);
 		navigator.serviceWorker.ready.then(async (registration) => {
 			const subscription = await registration.pushManager.getSubscription();
-			setSubscribed(subscription !== null);
+			setEndpoint(subscription?.endpoint ?? null);
 		});
 	}, []);
 
+	const bridges = useQuery({
+		...orpc.bridge.list.queryOptions(),
+		enabled: subscribed,
+	});
+	const interests = useQuery({
+		...orpc.pushSubscription.myInterests.queryOptions({
+			input: { endpoint: endpoint ?? "" },
+		}),
+		enabled: subscribed,
+	});
+
 	const subscribeMutation = useMutation(
 		orpc.pushSubscription.subscribe.mutationOptions({
-			onSuccess: () => setSubscribed(true),
+			onSuccess: (_, variables) => setEndpoint(variables.endpoint),
 		}),
 	);
 	const unsubscribeMutation = useMutation(
 		orpc.pushSubscription.unsubscribe.mutationOptions({
-			onSuccess: () => setSubscribed(false),
+			onSuccess: () => {
+				setEndpoint(null);
+				setShowSettings(false);
+			},
+		}),
+	);
+	const updateInterestsMutation = useMutation(
+		orpc.pushSubscription.updateInterests.mutationOptions({
+			onSuccess: () => interests.refetch(),
 		}),
 	);
 
@@ -69,26 +91,96 @@ export function NotificationToggle() {
 		const registration = await navigator.serviceWorker.ready;
 		const subscription = await registration.pushManager.getSubscription();
 		if (!subscription) {
-			setSubscribed(false);
+			setEndpoint(null);
 			return;
 		}
 
-		const endpoint = subscription.endpoint;
+		const subscriptionEndpoint = subscription.endpoint;
 		await subscription.unsubscribe();
-		unsubscribeMutation.mutate({ endpoint });
+		unsubscribeMutation.mutate({ endpoint: subscriptionEndpoint });
+	}
+
+	function toggleBridgeInterest(bridgeId: string, checked: boolean) {
+		if (!endpoint) return;
+		const current = interests.data?.bridgeIds ?? [];
+		const next = checked
+			? [...current, bridgeId]
+			: current.filter((id) => id !== bridgeId);
+		updateInterestsMutation.mutate({ endpoint, bridgeIds: next });
 	}
 
 	if (!supported) return null;
 
-	return subscribed ? (
-		<Button variant="outline" size="sm" onClick={handleDisable}>
-			<BellOff className="h-4 w-4" />
-			Tắt thông báo
-		</Button>
-	) : (
-		<Button variant="outline" size="sm" onClick={handleEnable}>
-			<Bell className="h-4 w-4" />
-			Bật thông báo
-		</Button>
+	if (!subscribed) {
+		return (
+			<Button variant="outline" size="sm" onClick={handleEnable}>
+				<Bell className="h-4 w-4" />
+				Bật thông báo
+			</Button>
+		);
+	}
+
+	const selectedBridgeIds = interests.data?.bridgeIds ?? [];
+	const watchingAll = selectedBridgeIds.length === 0;
+
+	return (
+		<div className="relative">
+			<div className="flex items-center gap-2">
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => setShowSettings((v) => !v)}
+				>
+					<Bell className="h-4 w-4" />
+					Đã bật thông báo
+				</Button>
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					aria-label="Tắt thông báo"
+					onClick={handleDisable}
+				>
+					<BellOff className="h-4 w-4" />
+				</Button>
+			</div>
+
+			{showSettings ? (
+				<div className="absolute right-0 z-10 mt-2 w-64 rounded-md border bg-popover p-3 text-popover-foreground shadow-md">
+					<p className="mb-2 font-medium text-sm">Chỉ nhận thông báo cho cầu</p>
+					<label
+						htmlFor="interest-all"
+						className="mb-2 flex items-center gap-2 text-sm"
+					>
+						<Checkbox
+							id="interest-all"
+							checked={watchingAll}
+							onCheckedChange={(checked) => {
+								if (checked)
+									updateInterestsMutation.mutate({ endpoint, bridgeIds: [] });
+							}}
+						/>
+						Tất cả các cầu
+					</label>
+					<div className="max-h-48 space-y-1 overflow-y-auto border-t pt-2">
+						{bridges.data?.map((bridge) => (
+							<label
+								key={bridge.id}
+								htmlFor={`interest-${bridge.id}`}
+								className="flex items-center gap-2 text-sm"
+							>
+								<Checkbox
+									id={`interest-${bridge.id}`}
+									checked={selectedBridgeIds.includes(bridge.id)}
+									onCheckedChange={(checked) =>
+										toggleBridgeInterest(bridge.id, checked === true)
+									}
+								/>
+								{bridge.name}
+							</label>
+						))}
+					</div>
+				</div>
+			) : null}
+		</div>
 	);
 }

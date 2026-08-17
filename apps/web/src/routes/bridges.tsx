@@ -7,6 +7,7 @@ import {
 } from "@flood-bridge-alert/ui/components/card";
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router";
 
 import { NotificationToggle } from "@/components/notification-toggle";
 import { orpc } from "@/utils/orpc";
@@ -54,7 +55,14 @@ export default function Bridges() {
 							<Card key={bridge.id}>
 								<CardHeader className="flex flex-row items-center justify-between">
 									<div>
-										<CardTitle>{bridge.name}</CardTitle>
+										<CardTitle>
+											<Link
+												to={`/bridges/${bridge.id}`}
+												className="hover:underline"
+											>
+												{bridge.name}
+											</Link>
+										</CardTitle>
 										{bridge.location ? (
 											<CardDescription>{bridge.location}</CardDescription>
 										) : null}
