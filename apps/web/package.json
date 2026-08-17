@@ -11,7 +11,6 @@
 	},
 	"dependencies": {
 		"@flood-bridge-alert/api": "workspace:*",
-		"@flood-bridge-alert/auth": "workspace:*",
 		"@flood-bridge-alert/env": "workspace:*",
 		"@flood-bridge-alert/ui": "workspace:*",
 		"@orpc/client": "catalog:",

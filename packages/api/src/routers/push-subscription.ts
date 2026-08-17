@@ -1,7 +1,7 @@
 import prisma from "@flood-bridge-alert/db";
 import { z } from "zod";
 
-import { publicProcedure } from "../index";
+import { protectedProcedure } from "../index";
 
 const subscriptionInput = z.object({
 	endpoint: z.string().min(1),
@@ -12,17 +12,19 @@ const subscriptionInput = z.object({
 });
 
 export const pushSubscriptionRouter = {
-	subscribe: publicProcedure
+	subscribe: protectedProcedure
 		.input(subscriptionInput)
-		.handler(async ({ input }) => {
+		.handler(async ({ input, context }) => {
 			await prisma.pushSubscription.upsert({
 				where: { endpoint: input.endpoint },
 				create: {
+					userId: context.session.user.id,
 					endpoint: input.endpoint,
 					p256dh: input.keys.p256dh,
 					auth: input.keys.auth,
 				},
 				update: {
+					userId: context.session.user.id,
 					p256dh: input.keys.p256dh,
 					auth: input.keys.auth,
 				},
@@ -30,11 +32,11 @@ export const pushSubscriptionRouter = {
 			return { success: true };
 		}),
 
-	unsubscribe: publicProcedure
+	unsubscribe: protectedProcedure
 		.input(z.object({ endpoint: z.string().min(1) }))
-		.handler(async ({ input }) => {
+		.handler(async ({ input, context }) => {
 			await prisma.pushSubscription.deleteMany({
-				where: { endpoint: input.endpoint },
+				where: { endpoint: input.endpoint, userId: context.session.user.id },
 			});
 			return { success: true };
 		}),

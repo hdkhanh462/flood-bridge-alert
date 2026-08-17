@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Bell, BellOff } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { authClient } from "@/lib/auth-client";
 import { orpc } from "@/utils/orpc";
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
@@ -44,6 +45,11 @@ export function NotificationToggle() {
 	async function handleEnable() {
 		const permission = await Notification.requestPermission();
 		if (permission !== "granted") return;
+
+		const { data: session } = await authClient.getSession();
+		if (!session) {
+			await authClient.signIn.anonymous();
+		}
 
 		const registration = await navigator.serviceWorker.ready;
 		const subscription = await registration.pushManager.subscribe({

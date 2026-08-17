@@ -160,9 +160,6 @@ importers:
       '@flood-bridge-alert/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@flood-bridge-alert/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
       '@flood-bridge-alert/env':
         specifier: workspace:*
         version: link:../../packages/env

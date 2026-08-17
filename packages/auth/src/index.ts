@@ -2,6 +2,7 @@ import { createPrismaClient } from "@flood-bridge-alert/db";
 import { env } from "@flood-bridge-alert/env/server";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin, anonymous } from "better-auth/plugins";
 
 export function createAuth() {
 	const prisma = createPrismaClient();
@@ -17,15 +18,6 @@ export function createAuth() {
 		},
 		secret: env.BETTER_AUTH_SECRET,
 		baseURL: env.BETTER_AUTH_URL,
-		user: {
-			additionalFields: {
-				role: {
-					type: "string",
-					defaultValue: "user",
-					input: false,
-				},
-			},
-		},
 		advanced: {
 			defaultCookieAttributes: {
 				sameSite: "none",
@@ -33,7 +25,7 @@ export function createAuth() {
 				httpOnly: true,
 			},
 		},
-		plugins: [],
+		plugins: [admin(), anonymous()],
 	});
 }
 

@@ -1,6 +1,5 @@
-import type { auth } from "@flood-bridge-alert/auth";
 import { env } from "@flood-bridge-alert/env/web";
-import { inferAdditionalFields } from "better-auth/client/plugins";
+import { adminClient, anonymousClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 function getServerUrl(url: string) {
@@ -42,5 +41,5 @@ export const authClient = createAuthClient({
 	// better-auth derives its route-matching base from this URL's path, so the
 	// public auth path must equal the server-side mount (/api/auth everywhere)
 	baseURL: new URL("/api/auth", getServerUrl(env.VITE_SERVER_URL)).toString(),
-	plugins: [inferAdditionalFields<typeof auth>()],
+	plugins: [adminClient(), anonymousClient()],
 });
