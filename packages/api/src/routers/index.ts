@@ -1,6 +1,7 @@
 import type { RouterClient } from "@orpc/server";
 
 import { protectedProcedure, publicProcedure } from "../index";
+import { adminRouter } from "./admin";
 import { bridgeRouter } from "./bridge";
 import { pushSubscriptionRouter } from "./push-subscription";
 import { todoRouter } from "./todo";
@@ -15,6 +16,7 @@ export const appRouter = {
 			user: context.session?.user,
 		};
 	}),
+	admin: adminRouter,
 	bridge: bridgeRouter,
 	pushSubscription: pushSubscriptionRouter,
 	todo: todoRouter,

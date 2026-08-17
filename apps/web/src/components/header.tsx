@@ -9,6 +9,7 @@ export default function Header() {
 		{ to: "/bridges", label: "Cầu tràn" },
 		{ to: "/dashboard", label: "Dashboard" },
 		{ to: "/todos", label: "Todos" },
+		{ to: "/admin", label: "Quản trị" },
 	] as const;
 
 	return (
