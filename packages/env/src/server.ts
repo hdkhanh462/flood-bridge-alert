@@ -13,6 +13,9 @@ export const env = createEnv({
 		VAPID_PUBLIC_KEY: z.string().min(1),
 		VAPID_PRIVATE_KEY: z.string().min(1),
 		VAPID_SUBJECT: z.string().min(1),
+		SUPERADMIN_EMAIL: z.string().min(1).optional(),
+		SUPERADMIN_PASSWORD: z.string().min(1).optional(),
+		SUPERADMIN_NAME: z.string().min(1).default("Super Admin"),
 		NODE_ENV: z
 			.enum(["development", "production", "test"])
 			.default("development"),

@@ -1,35 +1,36 @@
 {
-  "name": "server",
-  "type": "module",
-  "main": "src/index.ts",
-  "scripts": {
-    "build": "tsdown",
-    "check-types": "tsc -b",
-    "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.mjs"
-  },
-  "dependencies": {
-    "@flood-bridge-alert/api": "workspace:*",
-    "@flood-bridge-alert/auth": "workspace:*",
-    "@flood-bridge-alert/db": "workspace:*",
-    "@flood-bridge-alert/env": "workspace:*",
-    "@orpc/openapi": "catalog:",
-    "@orpc/server": "catalog:",
-    "@orpc/zod": "catalog:",
-    "better-auth": "catalog:",
-    "cors": "^2.8.6",
-    "dotenv": "catalog:",
-    "express": "^5.2.1",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@flood-bridge-alert/config": "workspace:*",
-    "@types/cors": "^2.8.19",
-    "@types/express": "catalog:",
-    "@types/node": "catalog:",
-    "tsdown": "^0.22.14",
-    "tsx": "^4.23.1",
-    "typescript": "catalog:"
-  }
+	"name": "server",
+	"type": "module",
+	"main": "src/index.ts",
+	"scripts": {
+		"build": "tsdown",
+		"check-types": "tsc -b",
+		"compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
+		"dev": "tsx watch src/index.ts",
+		"start": "node dist/index.mjs",
+		"seed:admin": "tsx src/scripts/seed-admin.ts"
+	},
+	"dependencies": {
+		"@flood-bridge-alert/api": "workspace:*",
+		"@flood-bridge-alert/auth": "workspace:*",
+		"@flood-bridge-alert/db": "workspace:*",
+		"@flood-bridge-alert/env": "workspace:*",
+		"@orpc/openapi": "catalog:",
+		"@orpc/server": "catalog:",
+		"@orpc/zod": "catalog:",
+		"better-auth": "catalog:",
+		"cors": "^2.8.6",
+		"dotenv": "catalog:",
+		"express": "^5.2.1",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@flood-bridge-alert/config": "workspace:*",
+		"@types/cors": "^2.8.19",
+		"@types/express": "catalog:",
+		"@types/node": "catalog:",
+		"tsdown": "^0.22.14",
+		"tsx": "^4.23.1",
+		"typescript": "catalog:"
+	}
 }
