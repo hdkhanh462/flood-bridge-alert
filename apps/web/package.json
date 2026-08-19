@@ -3,10 +3,10 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "react-router build",
-		"dev": "react-router dev",
-		"start": "react-router-serve ./build/server/index.js",
-		"typecheck": "react-router typegen && tsc",
+		"build": "vite build",
+		"dev": "vite dev",
+		"start": "vite preview",
+		"typecheck": "tsc",
 		"generate-pwa-assets": "pwa-assets-generator"
 	},
 	"dependencies": {
@@ -16,14 +16,10 @@
 		"@orpc/client": "catalog:",
 		"@orpc/server": "catalog:",
 		"@orpc/tanstack-query": "^1.14.12",
-		"@react-router/fs-routes": "^8.3.0",
-		"@react-router/node": "^8.3.0",
-		"@react-router/serve": "^8.3.0",
 		"@tanstack/react-form": "^1.33.2",
 		"@tanstack/react-query": "^5.101.4",
 		"better-auth": "catalog:",
 		"dotenv": "catalog:",
-		"isbot": "^5.2.1",
 		"lucide-react": "catalog:",
 		"next-themes": "catalog:",
 		"react": "catalog:",
@@ -35,7 +31,6 @@
 	},
 	"devDependencies": {
 		"@flood-bridge-alert/config": "workspace:*",
-		"@react-router/dev": "^8.3.0",
 		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/react-query-devtools": "^5.101.4",
 		"@types/node": "catalog:",

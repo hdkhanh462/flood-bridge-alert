@@ -13,10 +13,9 @@ import { Loader2, Trash2 } from "lucide-react";
 import { type FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router";
 
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { authClient } from "@/lib/auth-client";
 import { orpc } from "@/utils/orpc";
-
-import type { Route } from "./+types/admin";
 
 const BRIDGE_STATUS_LABEL: Record<string, string> = {
 	SAFE: "An toàn",
@@ -36,11 +35,8 @@ const SENSOR_STATUS_CLASS: Record<string, string> = {
 	NEVER: "bg-muted text-muted-foreground",
 };
 
-export function meta(_: Route.MetaArgs) {
-	return [{ title: "Quản trị cầu tràn" }];
-}
-
 export default function Admin() {
+	useDocumentTitle("Quản trị cầu tràn");
 	const { data: session, isPending } = authClient.useSession();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();

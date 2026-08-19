@@ -5,11 +5,7 @@ import {
 	CardTitle,
 } from "@flood-bridge-alert/ui/components/card";
 
-import type { Route } from "./+types/huong-dan-an-toan";
-
-export function meta(_: Route.MetaArgs) {
-	return [{ title: "Hướng dẫn an toàn" }];
-}
+import { useDocumentTitle } from "@/hooks/use-document-title";
 
 const GUIDES = [
 	{
@@ -34,6 +30,7 @@ const GUIDES = [
 ];
 
 export default function SafetyGuide() {
+	useDocumentTitle("Hướng dẫn an toàn");
 	return (
 		<div className="container mx-auto max-w-3xl px-4 py-6">
 			<h1 className="mb-4 font-semibold text-2xl">

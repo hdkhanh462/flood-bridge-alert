@@ -10,9 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 
 import { NotificationToggle } from "@/components/notification-toggle";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { orpc } from "@/utils/orpc";
-
-import type { Route } from "./+types/bridges";
 
 const STATUS_LABEL: Record<string, string> = {
 	SAFE: "An toàn",
@@ -26,11 +25,8 @@ const STATUS_CLASS: Record<string, string> = {
 	DANGER: "bg-red-500/15 text-red-600 dark:text-red-400",
 };
 
-export function meta(_: Route.MetaArgs) {
-	return [{ title: "Trạng thái cầu tràn" }];
-}
-
 export default function Bridges() {
+	useDocumentTitle("Trạng thái cầu tràn");
 	const bridges = useQuery(orpc.bridge.list.queryOptions());
 
 	return (

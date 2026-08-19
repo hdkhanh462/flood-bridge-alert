@@ -7,12 +7,11 @@ import {
 } from "@flood-bridge-alert/ui/components/card";
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 
 import { WaterLevelChart } from "@/components/water-level-chart";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { orpc } from "@/utils/orpc";
-
-import type { Route } from "./+types/bridges.$id";
 
 const STATUS_LABEL: Record<string, string> = {
 	SAFE: "An toàn",
@@ -26,19 +25,18 @@ const STATUS_CLASS: Record<string, string> = {
 	DANGER: "bg-red-500/15 text-red-600 dark:text-red-400",
 };
 
-export function meta(_: Route.MetaArgs) {
-	return [{ title: "Chi tiết cầu tràn" }];
-}
-
-export default function BridgeDetail({ params }: Route.ComponentProps) {
+export default function BridgeDetail() {
+	useDocumentTitle("Chi tiết cầu tràn");
+	const { id } = useParams<{ id: string }>();
+	const bridgeId = id ?? "";
 	const bridge = useQuery(
-		orpc.bridge.getById.queryOptions({ input: { id: params.id } }),
+		orpc.bridge.getById.queryOptions({ input: { id: bridgeId } }),
 	);
 	const history = useQuery(
-		orpc.bridge.history.queryOptions({ input: { id: params.id, limit: 100 } }),
+		orpc.bridge.history.queryOptions({ input: { id: bridgeId, limit: 100 } }),
 	);
 	const alerts = useQuery(
-		orpc.bridge.alerts.queryOptions({ input: { id: params.id } }),
+		orpc.bridge.alerts.queryOptions({ input: { id: bridgeId } }),
 	);
 
 	return (
