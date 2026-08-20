@@ -11,14 +11,57 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      apps: ${{ steps.set.outputs.apps }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            server:
+              - 'apps/server/**'
+              - 'packages/api/**'
+              - 'packages/auth/**'
+              - 'packages/db/**'
+              - 'packages/env/**'
+              - 'pnpm-lock.yaml'
+            web:
+              - 'apps/web/**'
+              - 'packages/ui/**'
+              - 'packages/api/**'
+              - 'packages/env/**'
+              - 'pnpm-lock.yaml'
+
+      - name: Build app list
+        id: set
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo 'apps=["server","web"]' >> "$GITHUB_OUTPUT"
+          else
+            apps='[]'
+            if [ "${{ steps.filter.outputs.server }}" = "true" ]; then apps=$(echo "$apps" | jq -c '. + ["server"]'); fi
+            if [ "${{ steps.filter.outputs.web }}" = "true" ]; then apps=$(echo "$apps" | jq -c '. + ["web"]'); fi
+            echo "apps=$apps" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
+    needs: changes
+    if: needs.changes.outputs.apps != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     strategy:
       matrix:
-        app: [server, web]
+        app: ${{ fromJson(needs.changes.outputs.apps) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,7 +106,8 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
 
   deploy:
-    needs: build
+    needs: [changes, build]
+    if: needs.changes.outputs.apps != '[]' && needs.build.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
