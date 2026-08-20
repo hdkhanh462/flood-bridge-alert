@@ -1,6 +1,9 @@
 services:
   server:
-    image: ghcr.io/hdkhanh462/flood-bridge-alert-server:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+      target: production
     ports:
       - "${SERVER_PORT:-3000}:3000"
     environment:
@@ -19,7 +22,13 @@ services:
     restart: unless-stopped
 
   web:
-    image: ghcr.io/hdkhanh462/flood-bridge-alert-web:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: production
+      args:
+        VITE_SERVER_URL: ${VITE_SERVER_URL}
+        VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY}
     ports:
       - "${WEB_PORT:-8080}:80"
     restart: unless-stopped
