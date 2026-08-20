@@ -10,7 +10,7 @@ import {
 import { Input } from "@flood-bridge-alert/ui/components/input";
 import { Label } from "@flood-bridge-alert/ui/components/label";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -18,11 +18,7 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
-export default function SignInForm({
-	onSwitchToSignUp,
-}: {
-	onSwitchToSignUp: () => void;
-}) {
+export default function SignInForm() {
 	const navigate = useNavigate();
 	const { isPending } = authClient.useSession();
 
@@ -39,7 +35,7 @@ export default function SignInForm({
 				},
 				{
 					onSuccess: () => {
-						navigate("/dashboard");
+						navigate("/admin");
 						toast.success("Đăng nhập thành công");
 					},
 					onError: (error) => {
@@ -86,6 +82,7 @@ export default function SignInForm({
 									id={field.name}
 									name={field.name}
 									type="email"
+									autoComplete="email"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
@@ -107,6 +104,7 @@ export default function SignInForm({
 									id={field.name}
 									name={field.name}
 									type="password"
+									autoComplete="current-password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
@@ -139,7 +137,11 @@ export default function SignInForm({
 						</Button>
 					)}
 				</form.Subscribe>
-				<Button variant="link" onClick={onSwitchToSignUp}>
+				<Button
+					variant="link"
+					nativeButton={false}
+					render={<Link to="/register" />}
+				>
 					Chưa có tài khoản? Đăng ký
 				</Button>
 			</CardFooter>

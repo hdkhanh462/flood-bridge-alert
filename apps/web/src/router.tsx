@@ -1,15 +1,16 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 
+import AuthLayout from "./components/auth-layout";
 import { ErrorBoundary } from "./components/error-boundary";
+import MainLayout from "./components/main-layout";
 import Root from "./root";
 import Home from "./routes/_index";
 import Admin from "./routes/admin";
 import Bridges from "./routes/bridges";
 import BridgeDetail from "./routes/bridges.$id";
-import Dashboard from "./routes/dashboard";
 import SafetyGuide from "./routes/huong-dan-an-toan";
 import Login from "./routes/login";
-import Todos from "./routes/todos";
+import Register from "./routes/register";
 
 export const router = createBrowserRouter([
 	{
@@ -17,14 +18,24 @@ export const router = createBrowserRouter([
 		element: <Root />,
 		errorElement: <ErrorBoundary />,
 		children: [
-			{ index: true, element: <Home /> },
-			{ path: "bridges", element: <Bridges /> },
-			{ path: "bridges/:id", element: <BridgeDetail /> },
-			{ path: "huong-dan-an-toan", element: <SafetyGuide /> },
-			{ path: "dashboard", element: <Dashboard /> },
-			{ path: "todos", element: <Todos /> },
-			{ path: "admin", element: <Admin /> },
-			{ path: "login", element: <Login /> },
+			{
+				element: <MainLayout />,
+				children: [
+					{ index: true, element: <Home /> },
+					{ path: "bridges", element: <Bridges /> },
+					{ path: "bridges/:id", element: <BridgeDetail /> },
+					{ path: "huong-dan-an-toan", element: <SafetyGuide /> },
+					{ path: "admin", element: <Admin /> },
+					{ path: "dashboard", element: <Navigate to="/admin" replace /> },
+				],
+			},
+			{
+				element: <AuthLayout />,
+				children: [
+					{ path: "login", element: <Login /> },
+					{ path: "register", element: <Register /> },
+				],
+			},
 		],
 	},
 ]);

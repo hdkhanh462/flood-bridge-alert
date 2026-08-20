@@ -17,8 +17,6 @@ const LINKS = [
 	{ to: "/", label: "Trang chủ" },
 	{ to: "/bridges", label: "Cầu tràn" },
 	{ to: "/huong-dan-an-toan", label: "Hướng dẫn an toàn" },
-	{ to: "/dashboard", label: "Dashboard" },
-	{ to: "/todos", label: "Todos" },
 	{ to: "/admin", label: "Quản trị" },
 ] as const;
 

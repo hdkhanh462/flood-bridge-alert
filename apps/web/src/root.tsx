@@ -4,7 +4,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet } from "react-router";
 
 import "./index.css";
-import Header from "./components/header";
 import { ThemeProvider } from "./components/theme-provider";
 import { queryClient } from "./utils/orpc";
 
@@ -17,10 +16,7 @@ export default function Root() {
 				disableTransitionOnChange
 				storageKey="vite-ui-theme"
 			>
-				<div className="grid h-svh grid-rows-[auto_1fr]">
-					<Header />
-					<Outlet />
-				</div>
+				<Outlet />
 				<Toaster richColors />
 			</ThemeProvider>
 			<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />

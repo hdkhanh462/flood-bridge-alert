@@ -10,7 +10,7 @@ import {
 import { Input } from "@flood-bridge-alert/ui/components/input";
 import { Label } from "@flood-bridge-alert/ui/components/label";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -18,11 +18,7 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
-export default function SignUpForm({
-	onSwitchToSignIn,
-}: {
-	onSwitchToSignIn: () => void;
-}) {
+export default function SignUpForm() {
 	const navigate = useNavigate();
 	const { isPending } = authClient.useSession();
 
@@ -41,7 +37,7 @@ export default function SignUpForm({
 				},
 				{
 					onSuccess: () => {
-						navigate("/dashboard");
+						navigate("/admin");
 						toast.success("Đăng ký thành công");
 					},
 					onError: (error) => {
@@ -86,6 +82,7 @@ export default function SignUpForm({
 								<Input
 									id={field.name}
 									name={field.name}
+									autoComplete="name"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
@@ -107,6 +104,7 @@ export default function SignUpForm({
 									id={field.name}
 									name={field.name}
 									type="email"
+									autoComplete="email"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
@@ -128,6 +126,7 @@ export default function SignUpForm({
 									id={field.name}
 									name={field.name}
 									type="password"
+									autoComplete="new-password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
@@ -160,7 +159,11 @@ export default function SignUpForm({
 						</Button>
 					)}
 				</form.Subscribe>
-				<Button variant="link" onClick={onSwitchToSignIn}>
+				<Button
+					variant="link"
+					nativeButton={false}
+					render={<Link to="/login" />}
+				>
 					Đã có tài khoản? Đăng nhập
 				</Button>
 			</CardFooter>
