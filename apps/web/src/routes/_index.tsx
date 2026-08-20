@@ -53,11 +53,15 @@ export default function Home() {
 					hiểm.
 				</p>
 				<div className="flex flex-wrap gap-3 pt-2">
-					<Button render={<Link to="/bridges" />}>
+					<Button nativeButton={false} render={<Link to="/bridges" />}>
 						Xem trạng thái cầu tràn
 						<ArrowRight className="h-4 w-4" />
 					</Button>
-					<Button variant="outline" render={<Link to="/huong-dan-an-toan" />}>
+					<Button
+						variant="outline"
+						nativeButton={false}
+						render={<Link to="/huong-dan-an-toan" />}
+					>
 						Hướng dẫn an toàn
 					</Button>
 				</div>

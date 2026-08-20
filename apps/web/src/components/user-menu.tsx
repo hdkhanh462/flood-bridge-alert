@@ -27,9 +27,13 @@ export default function UserMenu() {
 
 	if (!session) {
 		return (
-			<Link to="/login">
-				<Button variant="outline">Đăng nhập</Button>
-			</Link>
+			<Button
+				variant="outline"
+				nativeButton={false}
+				render={<Link to="/login" />}
+			>
+				Đăng nhập
+			</Button>
 		);
 	}
 

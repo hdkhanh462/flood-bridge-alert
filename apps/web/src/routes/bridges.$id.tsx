@@ -42,6 +42,7 @@ export default function BridgeDetail() {
 				variant="link"
 				size="sm"
 				className="mb-2 px-0"
+				nativeButton={false}
 				render={<Link to="/bridges" />}
 			>
 				<ArrowLeft className="h-4 w-4" />
