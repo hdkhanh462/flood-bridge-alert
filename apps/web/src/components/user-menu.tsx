@@ -13,6 +13,7 @@ import {
 	DropdownMenuTrigger,
 } from "@flood-bridge-alert/ui/components/dropdown-menu";
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
+import { UserCog } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 
 import { authClient } from "@/lib/auth-client";
@@ -49,11 +50,21 @@ export default function UserMenu() {
 				</Avatar>
 				<span className="hidden sm:inline">{session.user.name}</span>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="bg-card">
+			<DropdownMenuContent className="w-72 bg-card">
 				<DropdownMenuGroup>
 					<DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem>{session.user.email}</DropdownMenuItem>
+					<DropdownMenuItem className="whitespace-normal break-all">
+						{session.user.email}
+					</DropdownMenuItem>
+					<DropdownMenuItem
+						nativeButton={false}
+						render={<Link to="/account" />}
+					>
+						<UserCog className="h-4 w-4" />
+						Quản lý tài khoản
+					</DropdownMenuItem>
+					<DropdownMenuSeparator />
 					<DropdownMenuItem
 						variant="destructive"
 						onClick={() => {

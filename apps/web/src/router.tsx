@@ -5,6 +5,7 @@ import { ErrorBoundary } from "./components/error-boundary";
 import MainLayout from "./components/main-layout";
 import Root from "./root";
 import Home from "./routes/_index";
+import Account from "./routes/account";
 import Admin from "./routes/admin";
 import Bridges from "./routes/bridges";
 import BridgeDetail from "./routes/bridges.$id";
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
 					{ path: "bridges/:id", element: <BridgeDetail /> },
 					{ path: "huong-dan-an-toan", element: <SafetyGuide /> },
 					{ path: "admin", element: <Admin /> },
+					{ path: "account", element: <Account /> },
 					{ path: "dashboard", element: <Navigate to="/admin" replace /> },
 				],
 			},
