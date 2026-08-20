@@ -5,95 +5,93 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@flood-bridge-alert/ui/components/card";
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "@flood-bridge-alert/ui/components/empty";
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import { Waves } from "lucide-react";
 import { Link } from "react-router";
 
 import { NotificationToggle } from "@/components/notification-toggle";
+import { StatusBadge } from "@/components/status-badge";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { orpc } from "@/utils/orpc";
-
-const STATUS_LABEL: Record<string, string> = {
-	SAFE: "An toàn",
-	WARNING: "Cảnh báo",
-	DANGER: "Nguy hiểm",
-};
-
-const STATUS_CLASS: Record<string, string> = {
-	SAFE: "bg-green-500/15 text-green-600 dark:text-green-400",
-	WARNING: "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400",
-	DANGER: "bg-red-500/15 text-red-600 dark:text-red-400",
-};
 
 export default function Bridges() {
 	useDocumentTitle("Trạng thái cầu tràn");
 	const bridges = useQuery(orpc.bridge.list.queryOptions());
 
 	return (
-		<div className="container mx-auto max-w-3xl px-4 py-6">
-			<div className="mb-4 flex items-center justify-between">
-				<h1 className="font-semibold text-2xl">Trạng thái cầu tràn</h1>
+		<div className="container mx-auto max-w-4xl px-4 py-6 sm:py-10">
+			<div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+				<h1 className="font-semibold text-2xl tracking-tight">
+					Trạng thái cầu tràn
+				</h1>
 				<NotificationToggle />
 			</div>
 
 			{bridges.isLoading ? (
-				<div className="grid gap-4">
-					<Skeleton className="h-24 w-full" />
-					<Skeleton className="h-24 w-full" />
+				<div className="grid gap-4 sm:grid-cols-2">
+					<Skeleton className="h-32 w-full" />
+					<Skeleton className="h-32 w-full" />
 				</div>
 			) : bridges.data?.length === 0 ? (
-				<p className="text-muted-foreground">Chưa có dữ liệu cầu tràn nào.</p>
+				<Empty>
+					<EmptyHeader>
+						<EmptyMedia variant="icon">
+							<Waves />
+						</EmptyMedia>
+						<EmptyTitle>Chưa có cầu tràn nào</EmptyTitle>
+						<EmptyDescription>
+							Quản trị viên chưa thêm cầu tràn nào vào hệ thống.
+						</EmptyDescription>
+					</EmptyHeader>
+				</Empty>
 			) : (
-				<div className="grid gap-4">
-					{bridges.data?.map((bridge) => {
-						const status = bridge.latestReading?.status ?? null;
-						return (
-							<Card key={bridge.id}>
-								<CardHeader className="flex flex-row items-center justify-between">
-									<div>
-										<CardTitle>
-											<Link
-												to={`/bridges/${bridge.id}`}
-												className="hover:underline"
-											>
-												{bridge.name}
-											</Link>
-										</CardTitle>
-										{bridge.location ? (
-											<CardDescription>{bridge.location}</CardDescription>
-										) : null}
-									</div>
-									<span
-										className={`rounded-full px-3 py-1 font-medium text-sm ${
-											status
-												? STATUS_CLASS[status]
-												: "bg-muted text-muted-foreground"
-										}`}
-									>
-										{status ? STATUS_LABEL[status] : "Chưa có dữ liệu"}
-									</span>
-								</CardHeader>
-								<CardContent>
-									{bridge.latestReading ? (
-										<p className="text-muted-foreground text-sm">
-											Mực nước hiện tại:{" "}
-											<span className="font-medium text-foreground">
-												{bridge.latestReading.level} m
-											</span>{" "}
-											· Cập nhật lúc{" "}
-											{new Date(bridge.latestReading.recordedAt).toLocaleString(
-												"vi-VN",
-											)}
-										</p>
-									) : (
-										<p className="text-muted-foreground text-sm">
-											Chưa nhận được dữ liệu mực nước.
-										</p>
-									)}
-								</CardContent>
-							</Card>
-						);
-					})}
+				<div className="grid gap-4 sm:grid-cols-2">
+					{bridges.data?.map((bridge) => (
+						<Card key={bridge.id}>
+							<CardHeader className="flex flex-row items-start justify-between gap-2">
+								<div>
+									<CardTitle>
+										<Link
+											to={`/bridges/${bridge.id}`}
+											className="hover:underline"
+										>
+											{bridge.name}
+										</Link>
+									</CardTitle>
+									{bridge.location ? (
+										<CardDescription>{bridge.location}</CardDescription>
+									) : null}
+								</div>
+								<StatusBadge status={bridge.latestReading?.status} />
+							</CardHeader>
+							<CardContent>
+								{bridge.latestReading ? (
+									<p className="text-muted-foreground text-sm">
+										Mực nước hiện tại:{" "}
+										<span className="font-medium text-foreground">
+											{bridge.latestReading.level} m
+										</span>{" "}
+										· Cập nhật lúc{" "}
+										{new Date(bridge.latestReading.recordedAt).toLocaleString(
+											"vi-VN",
+										)}
+									</p>
+								) : (
+									<p className="text-muted-foreground text-sm">
+										Chưa nhận được dữ liệu mực nước.
+									</p>
+								)}
+							</CardContent>
+						</Card>
+					))}
 				</div>
 			)}
 		</div>

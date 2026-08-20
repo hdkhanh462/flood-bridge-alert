@@ -89,7 +89,7 @@ export function WaterLevelChart({
 		<div className="relative">
 			<svg
 				viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-				className="w-full text-blue-600 dark:text-blue-400"
+				className="w-full text-primary"
 				role="img"
 				aria-label="Biểu đồ mực nước theo thời gian"
 				onPointerLeave={() => setHoverIndex(null)}
@@ -156,7 +156,7 @@ export function WaterLevelChart({
 							x2={WIDTH - PADDING.right}
 							y1={chart.toY(threshold.warningMax)}
 							y2={chart.toY(threshold.warningMax)}
-							className="text-yellow-600 dark:text-yellow-400"
+							className="text-amber-600 dark:text-amber-400"
 							stroke="currentColor"
 							strokeWidth={1}
 							strokeDasharray="4 3"
@@ -165,7 +165,7 @@ export function WaterLevelChart({
 							x={WIDTH - PADDING.right}
 							y={chart.toY(threshold.warningMax) - 4}
 							textAnchor="end"
-							className="fill-yellow-600 text-[10px] dark:fill-yellow-400"
+							className="fill-amber-600 text-[10px] dark:fill-amber-400"
 						>
 							Cảnh báo ≤ {threshold.warningMax}m
 						</text>
