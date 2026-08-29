@@ -1,6 +1,12 @@
 import { env } from "@flood-bridge-alert/env/web";
 import { Button } from "@flood-bridge-alert/ui/components/button";
 import { Checkbox } from "@flood-bridge-alert/ui/components/checkbox";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@flood-bridge-alert/ui/components/popover";
+import { Separator } from "@flood-bridge-alert/ui/components/separator";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Bell, BellOff } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -22,7 +28,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
 export function NotificationToggle() {
 	const [supported, setSupported] = useState(false);
 	const [endpoint, setEndpoint] = useState<string | null>(null);
-	const [showSettings, setShowSettings] = useState(false);
+	const [open, setOpen] = useState(false);
 	const subscribed = endpoint !== null;
 
 	useEffect(() => {
@@ -54,7 +60,7 @@ export function NotificationToggle() {
 		orpc.pushSubscription.unsubscribe.mutationOptions({
 			onSuccess: () => {
 				setEndpoint(null);
-				setShowSettings(false);
+				setOpen(false);
 			},
 		}),
 	);
@@ -124,32 +130,17 @@ export function NotificationToggle() {
 	const watchingAll = selectedBridgeIds.length === 0;
 
 	return (
-		<div className="relative">
-			<div className="flex items-center gap-2">
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={() => setShowSettings((v) => !v)}
-				>
+		<div className="flex items-center gap-2">
+			<Popover open={open} onOpenChange={setOpen}>
+				<PopoverTrigger render={<Button variant="outline" size="sm" />}>
 					<Bell className="h-4 w-4" />
 					Đã bật thông báo
-				</Button>
-				<Button
-					variant="ghost"
-					size="icon-sm"
-					aria-label="Tắt thông báo"
-					onClick={handleDisable}
-				>
-					<BellOff className="h-4 w-4" />
-				</Button>
-			</div>
-
-			{showSettings ? (
-				<div className="absolute right-0 z-10 mt-2 w-64 rounded-md border bg-popover p-3 text-popover-foreground shadow-md">
-					<p className="mb-2 font-medium text-sm">Chỉ nhận thông báo cho cầu</p>
+				</PopoverTrigger>
+				<PopoverContent align="end" className="w-64">
+					<p className="font-medium text-sm">Chỉ nhận thông báo cho cầu</p>
 					<label
 						htmlFor="interest-all"
-						className="mb-2 flex items-center gap-2 text-sm"
+						className="flex items-center gap-2 text-sm"
 					>
 						<Checkbox
 							id="interest-all"
@@ -161,7 +152,8 @@ export function NotificationToggle() {
 						/>
 						Tất cả các cầu
 					</label>
-					<div className="max-h-48 space-y-1 overflow-y-auto border-t pt-2">
+					<Separator />
+					<div className="max-h-48 space-y-2 overflow-y-auto">
 						{bridges.data?.map((bridge) => (
 							<label
 								key={bridge.id}
@@ -179,8 +171,16 @@ export function NotificationToggle() {
 							</label>
 						))}
 					</div>
-				</div>
-			) : null}
+				</PopoverContent>
+			</Popover>
+			<Button
+				variant="ghost"
+				size="icon-sm"
+				aria-label="Tắt thông báo"
+				onClick={handleDisable}
+			>
+				<BellOff className="h-4 w-4" />
+			</Button>
 		</div>
 	);
 }

@@ -1,0 +1,41 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    depends_on:
+      - server
+      - web
+
+  server:
+    image: ghcr.io/hdkhanh462/flood-bridge-alert-server:${IMAGE_TAG:-latest}
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - BLYNK_WEBHOOK_TOKEN=${BLYNK_WEBHOOK_TOKEN}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_SUBJECT=${VAPID_SUBJECT}
+      - SUPERADMIN_EMAIL=${SUPERADMIN_EMAIL}
+      - SUPERADMIN_PASSWORD=${SUPERADMIN_PASSWORD}
+    restart: unless-stopped
+
+  web:
+    image: ghcr.io/hdkhanh462/flood-bridge-alert-web:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      - server
+
+volumes:
+  caddy_data:
+  caddy_config:

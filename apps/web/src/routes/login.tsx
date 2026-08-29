@@ -1,14 +1,7 @@
-import { useState } from "react";
-
 import SignInForm from "@/components/sign-in-form";
-import SignUpForm from "@/components/sign-up-form";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 
 export default function Login() {
-  const [showSignIn, setShowSignIn] = useState(false);
-
-  return showSignIn ? (
-    <SignInForm onSwitchToSignUp={() => setShowSignIn(false)} />
-  ) : (
-    <SignUpForm onSwitchToSignIn={() => setShowSignIn(true)} />
-  );
+	useDocumentTitle("Đăng nhập");
+	return <SignInForm />;
 }

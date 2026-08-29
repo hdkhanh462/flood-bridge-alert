@@ -1,3 +1,4 @@
+import { Button } from "@flood-bridge-alert/ui/components/button";
 import {
 	Card,
 	CardContent,
@@ -6,24 +7,20 @@ import {
 	CardTitle,
 } from "@flood-bridge-alert/ui/components/card";
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableRow,
+} from "@flood-bridge-alert/ui/components/table";
 import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router";
 
+import { StatusBadge } from "@/components/status-badge";
 import { WaterLevelChart } from "@/components/water-level-chart";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { orpc } from "@/utils/orpc";
-
-const STATUS_LABEL: Record<string, string> = {
-	SAFE: "An toàn",
-	WARNING: "Cảnh báo",
-	DANGER: "Nguy hiểm",
-};
-
-const STATUS_CLASS: Record<string, string> = {
-	SAFE: "bg-green-500/15 text-green-600 dark:text-green-400",
-	WARNING: "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400",
-	DANGER: "bg-red-500/15 text-red-600 dark:text-red-400",
-};
 
 export default function BridgeDetail() {
 	useDocumentTitle("Chi tiết cầu tràn");
@@ -40,33 +37,33 @@ export default function BridgeDetail() {
 	);
 
 	return (
-		<div className="container mx-auto max-w-3xl px-4 py-6">
-			<Link
-				to="/bridges"
-				className="text-muted-foreground text-sm hover:underline"
+		<div className="container mx-auto max-w-3xl px-4 py-6 sm:py-10">
+			<Button
+				variant="link"
+				size="sm"
+				className="mb-2 px-0"
+				nativeButton={false}
+				render={<Link to="/bridges" />}
 			>
-				← Quay lại danh sách cầu
-			</Link>
+				<ArrowLeft className="h-4 w-4" />
+				Quay lại danh sách cầu
+			</Button>
 
 			{bridge.isLoading ? (
-				<Skeleton className="mt-4 h-8 w-64" />
+				<Skeleton className="mt-2 h-8 w-64" />
 			) : bridge.data ? (
-				<div className="mt-2 mb-4 flex items-center justify-between">
+				<div className="mt-2 mb-6 flex flex-wrap items-center justify-between gap-2">
 					<div>
-						<h1 className="font-semibold text-2xl">{bridge.data.name}</h1>
+						<h1 className="font-semibold text-2xl tracking-tight">
+							{bridge.data.name}
+						</h1>
 						{bridge.data.location ? (
 							<p className="text-muted-foreground text-sm">
 								{bridge.data.location}
 							</p>
 						) : null}
 					</div>
-					{bridge.data.latestReading ? (
-						<span
-							className={`rounded-full px-3 py-1 font-medium text-sm ${STATUS_CLASS[bridge.data.latestReading.status]}`}
-						>
-							{STATUS_LABEL[bridge.data.latestReading.status]}
-						</span>
-					) : null}
+					<StatusBadge status={bridge.data.latestReading?.status} />
 				</div>
 			) : (
 				<p className="mt-4 text-muted-foreground">Không tìm thấy cầu này.</p>
@@ -97,29 +94,26 @@ export default function BridgeDetail() {
 				</CardHeader>
 				<CardContent>
 					{alerts.isLoading ? (
-						<p className="text-muted-foreground">Đang tải...</p>
+						<p className="text-muted-foreground text-sm">Đang tải...</p>
 					) : alerts.data?.length === 0 ? (
-						<p className="text-muted-foreground">
+						<p className="text-muted-foreground text-sm">
 							Chưa có cảnh báo nào cho cầu này.
 						</p>
 					) : (
-						<ul className="space-y-2">
-							{alerts.data?.map((alert) => (
-								<li
-									key={alert.id}
-									className="flex items-center justify-between border-b pb-2 text-sm last:border-0"
-								>
-									<span
-										className={`rounded-full px-2 py-0.5 text-xs ${STATUS_CLASS[alert.status]}`}
-									>
-										{STATUS_LABEL[alert.status]}
-									</span>
-									<span className="text-muted-foreground">
-										{new Date(alert.createdAt).toLocaleString("vi-VN")}
-									</span>
-								</li>
-							))}
-						</ul>
+						<Table>
+							<TableBody>
+								{alerts.data?.map((alert) => (
+									<TableRow key={alert.id}>
+										<TableCell>
+											<StatusBadge status={alert.status} />
+										</TableCell>
+										<TableCell className="text-right text-muted-foreground">
+											{new Date(alert.createdAt).toLocaleString("vi-VN")}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
 					)}
 				</CardContent>
 			</Card>
