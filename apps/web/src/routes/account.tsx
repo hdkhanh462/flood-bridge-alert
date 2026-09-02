@@ -81,13 +81,14 @@ function ProfileForm({ name }: { name: string }) {
 					selector={(state) => ({
 						canSubmit: state.canSubmit,
 						isSubmitting: state.isSubmitting,
+						isDirty: state.isDirty,
 					})}
 				>
-					{({ canSubmit, isSubmitting }) => (
+					{({ canSubmit, isSubmitting, isDirty }) => (
 						<Button
 							type="submit"
 							form="profile-form"
-							disabled={!canSubmit || isSubmitting}
+							disabled={!canSubmit || isSubmitting || !isDirty}
 						>
 							{isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
 						</Button>
@@ -163,13 +164,14 @@ function EmailForm({ email }: { email: string }) {
 					selector={(state) => ({
 						canSubmit: state.canSubmit,
 						isSubmitting: state.isSubmitting,
+						isDirty: state.isDirty,
 					})}
 				>
-					{({ canSubmit, isSubmitting }) => (
+					{({ canSubmit, isSubmitting, isDirty }) => (
 						<Button
 							type="submit"
 							form="email-form"
-							disabled={!canSubmit || isSubmitting}
+							disabled={!canSubmit || isSubmitting || !isDirty}
 						>
 							{isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
 						</Button>
@@ -272,13 +274,14 @@ function PasswordForm() {
 					selector={(state) => ({
 						canSubmit: state.canSubmit,
 						isSubmitting: state.isSubmitting,
+						isDirty: state.isDirty,
 					})}
 				>
-					{({ canSubmit, isSubmitting }) => (
+					{({ canSubmit, isSubmitting, isDirty }) => (
 						<Button
 							type="submit"
 							form="password-form"
-							disabled={!canSubmit || isSubmitting}
+							disabled={!canSubmit || isSubmitting || !isDirty}
 						>
 							{isSubmitting ? "Đang lưu..." : "Đổi mật khẩu"}
 						</Button>

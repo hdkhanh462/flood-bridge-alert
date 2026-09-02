@@ -39,6 +39,7 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "@flood-bridge-alert/ui/components/tabs";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	Loader2,
@@ -50,6 +51,7 @@ import {
 } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import z from "zod";
 
 import { LocationPicker } from "@/components/location-picker";
 import { SensorStatusBadge, StatusBadge } from "@/components/status-badge";
@@ -65,6 +67,226 @@ type AdminBridge = NonNullable<
 
 function useAdminBridges(enabled: boolean) {
 	return useQuery({ ...orpc.admin.bridge.list.queryOptions(), enabled });
+}
+
+function EditBridgeForm({
+	bridge,
+	isPending,
+	onSubmit,
+}: {
+	bridge: AdminBridge | null;
+	isPending: boolean;
+	onSubmit: (values: {
+		name: string;
+		location: string;
+		coords: Coords | null;
+	}) => void;
+}) {
+	const form = useForm({
+		defaultValues: {
+			name: bridge?.name ?? "",
+			location: bridge?.location ?? "",
+			coords: (bridge?.latitude != null && bridge?.longitude != null
+				? { lat: bridge.latitude, lng: bridge.longitude }
+				: null) as Coords | null,
+		},
+		onSubmit: async ({ value }) => onSubmit(value),
+		validators: {
+			onSubmit: z.object({
+				name: z.string().min(1, "Tên cầu không được để trống"),
+				location: z.string(),
+				coords: z.object({ lat: z.number(), lng: z.number() }).nullable(),
+			}),
+		},
+	});
+
+	return (
+		<>
+			<form
+				id="edit-bridge-form"
+				onSubmit={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					form.handleSubmit();
+				}}
+				className="grid gap-4"
+			>
+				<form.Field name="name">
+					{(field) => (
+						<div className="grid gap-2">
+							<Label htmlFor={field.name}>Tên cầu</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-destructive text-sm">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+				<form.Field name="location">
+					{(field) => (
+						<div className="grid gap-2">
+							<Label htmlFor={field.name}>Khu vực</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+								placeholder="Huyện Củ Chi, TP.HCM"
+							/>
+						</div>
+					)}
+				</form.Field>
+				<form.Field name="coords">
+					{(field) => (
+						<div className="grid gap-2">
+							<Label>Vị trí trên bản đồ</Label>
+							<LocationPicker
+								value={field.state.value}
+								onChange={field.handleChange}
+							/>
+						</div>
+					)}
+				</form.Field>
+			</form>
+			<DialogFooter>
+				<form.Subscribe
+					selector={(state) => ({
+						canSubmit: state.canSubmit,
+						isSubmitting: state.isSubmitting,
+						isDirty: state.isDirty,
+					})}
+				>
+					{({ canSubmit, isSubmitting, isDirty }) => (
+						<Button
+							type="submit"
+							form="edit-bridge-form"
+							disabled={!canSubmit || isSubmitting || !isDirty || isPending}
+						>
+							{isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lưu"}
+						</Button>
+					)}
+				</form.Subscribe>
+			</DialogFooter>
+		</>
+	);
+}
+
+function EditThresholdForm({
+	bridge,
+	isPending,
+	onSubmit,
+}: {
+	bridge: AdminBridge | null;
+	isPending: boolean;
+	onSubmit: (values: { safeMax: number; warningMax: number }) => void;
+}) {
+	const form = useForm({
+		defaultValues: {
+			safeMax: bridge?.threshold?.safeMax ?? 0,
+			warningMax: bridge?.threshold?.warningMax ?? 0,
+		},
+		onSubmit: async ({ value }) => onSubmit(value),
+		validators: {
+			onSubmit: z
+				.object({
+					safeMax: z.number().finite(),
+					warningMax: z.number().finite(),
+				})
+				.refine((v) => v.warningMax > v.safeMax, {
+					message: "Ngưỡng cảnh báo phải lớn hơn ngưỡng an toàn",
+					path: ["warningMax"],
+				}),
+		},
+	});
+
+	return (
+		<>
+			<form
+				id="edit-threshold-form"
+				onSubmit={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					form.handleSubmit();
+				}}
+				className="grid gap-4"
+			>
+				<form.Field name="safeMax">
+					{(field) => (
+						<div className="grid gap-2">
+							<Label htmlFor={field.name}>Ngưỡng an toàn (m)</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="number"
+								step="0.01"
+								placeholder="Ví dụ: 1.5"
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(Number(e.target.value))}
+								required
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-destructive text-sm">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+				<form.Field name="warningMax">
+					{(field) => (
+						<div className="grid gap-2">
+							<Label htmlFor={field.name}>Ngưỡng cảnh báo (m)</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="number"
+								step="0.01"
+								placeholder="Ví dụ: 2.5"
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(Number(e.target.value))}
+								required
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-destructive text-sm">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</form>
+			<DialogFooter>
+				<form.Subscribe
+					selector={(state) => ({
+						canSubmit: state.canSubmit,
+						isSubmitting: state.isSubmitting,
+						isDirty: state.isDirty,
+					})}
+				>
+					{({ canSubmit, isSubmitting, isDirty }) => (
+						<Button
+							type="submit"
+							form="edit-threshold-form"
+							disabled={!canSubmit || isSubmitting || !isDirty || isPending}
+						>
+							{isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lưu"}
+						</Button>
+					)}
+				</form.Subscribe>
+			</DialogFooter>
+		</>
+	);
 }
 
 export default function Admin() {
@@ -162,9 +384,6 @@ export default function Admin() {
 	const [editingBridge, setEditingBridge] = useState<AdminBridge | null>(null);
 	const [editingBridgeDetails, setEditingBridgeDetails] =
 		useState<AdminBridge | null>(null);
-	const [editBridgeLocation, setEditBridgeLocation] = useState<Coords | null>(
-		null,
-	);
 
 	function handleCreateBridge(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -185,38 +404,6 @@ export default function Admin() {
 					setNewBridgeLocation(null);
 				},
 			},
-		);
-	}
-
-	function handleUpdateBridgeDetails(e: FormEvent<HTMLFormElement>) {
-		e.preventDefault();
-		if (!editingBridgeDetails) return;
-		const formData = new FormData(e.currentTarget);
-		const name = String(formData.get("name") ?? "").trim();
-		const location = String(formData.get("location") ?? "").trim();
-		if (!name) return;
-		updateBridge.mutate(
-			{
-				id: editingBridgeDetails.id,
-				name,
-				location: location || undefined,
-				latitude: editBridgeLocation?.lat,
-				longitude: editBridgeLocation?.lng,
-			},
-			{ onSuccess: () => setEditingBridgeDetails(null) },
-		);
-	}
-
-	function handleUpsertThreshold(e: FormEvent<HTMLFormElement>) {
-		e.preventDefault();
-		if (!editingBridge) return;
-		const formData = new FormData(e.currentTarget);
-		const safeMax = Number(formData.get("safeMax"));
-		const warningMax = Number(formData.get("warningMax"));
-		if (Number.isNaN(safeMax) || Number.isNaN(warningMax)) return;
-		upsertThreshold.mutate(
-			{ bridgeId: editingBridge.id, safeMax, warningMax },
-			{ onSuccess: () => setEditingBridge(null) },
 		);
 	}
 
@@ -385,18 +572,7 @@ export default function Admin() {
 														variant="ghost"
 														size="icon-sm"
 														aria-label="Sửa vị trí"
-														onClick={() => {
-															setEditingBridgeDetails(bridge);
-															setEditBridgeLocation(
-																bridge.latitude != null &&
-																	bridge.longitude != null
-																	? {
-																			lat: bridge.latitude,
-																			lng: bridge.longitude,
-																		}
-																	: null,
-															);
-														}}
+														onClick={() => setEditingBridgeDetails(bridge)}
 													>
 														<MapPin className="h-4 w-4" />
 													</Button>
@@ -620,50 +796,24 @@ export default function Admin() {
 					<DialogHeader>
 						<DialogTitle>Sửa cầu — {editingBridgeDetails?.name}</DialogTitle>
 					</DialogHeader>
-					<form
-						id="edit-bridge-form"
-						onSubmit={handleUpdateBridgeDetails}
-						className="grid gap-4"
-					>
-						<div className="grid gap-2">
-							<Label htmlFor="edit-name">Tên cầu</Label>
-							<Input
-								id="edit-name"
-								name="name"
-								defaultValue={editingBridgeDetails?.name}
-								required
-							/>
-						</div>
-						<div className="grid gap-2">
-							<Label htmlFor="edit-location">Khu vực</Label>
-							<Input
-								id="edit-location"
-								name="location"
-								defaultValue={editingBridgeDetails?.location ?? ""}
-								placeholder="Huyện Củ Chi, TP.HCM"
-							/>
-						</div>
-						<div className="grid gap-2">
-							<Label>Vị trí trên bản đồ</Label>
-							<LocationPicker
-								value={editBridgeLocation}
-								onChange={setEditBridgeLocation}
-							/>
-						</div>
-					</form>
-					<DialogFooter>
-						<Button
-							type="submit"
-							form="edit-bridge-form"
-							disabled={updateBridge.isPending}
-						>
-							{updateBridge.isPending ? (
-								<Loader2 className="h-4 w-4 animate-spin" />
-							) : (
-								"Lưu"
-							)}
-						</Button>
-					</DialogFooter>
+					<EditBridgeForm
+						key={editingBridgeDetails?.id ?? "none"}
+						bridge={editingBridgeDetails}
+						isPending={updateBridge.isPending}
+						onSubmit={(values) => {
+							if (!editingBridgeDetails) return;
+							updateBridge.mutate(
+								{
+									id: editingBridgeDetails.id,
+									name: values.name,
+									location: values.location.trim() || undefined,
+									latitude: values.coords?.lat,
+									longitude: values.coords?.lng,
+								},
+								{ onSuccess: () => setEditingBridgeDetails(null) },
+							);
+						}}
+					/>
 				</DialogContent>
 			</Dialog>
 
@@ -675,49 +825,22 @@ export default function Admin() {
 					<DialogHeader>
 						<DialogTitle>Cấu hình ngưỡng — {editingBridge?.name}</DialogTitle>
 					</DialogHeader>
-					<form
-						id="edit-threshold-form"
-						onSubmit={handleUpsertThreshold}
-						className="grid gap-4"
-					>
-						<div className="grid gap-2">
-							<Label htmlFor="safeMax">Ngưỡng an toàn (m)</Label>
-							<Input
-								id="safeMax"
-								name="safeMax"
-								type="number"
-								step="0.01"
-								placeholder="Ví dụ: 1.5"
-								defaultValue={editingBridge?.threshold?.safeMax}
-								required
-							/>
-						</div>
-						<div className="grid gap-2">
-							<Label htmlFor="warningMax">Ngưỡng cảnh báo (m)</Label>
-							<Input
-								id="warningMax"
-								name="warningMax"
-								type="number"
-								step="0.01"
-								placeholder="Ví dụ: 2.5"
-								defaultValue={editingBridge?.threshold?.warningMax}
-								required
-							/>
-						</div>
-					</form>
-					<DialogFooter>
-						<Button
-							type="submit"
-							form="edit-threshold-form"
-							disabled={upsertThreshold.isPending}
-						>
-							{upsertThreshold.isPending ? (
-								<Loader2 className="h-4 w-4 animate-spin" />
-							) : (
-								"Lưu"
-							)}
-						</Button>
-					</DialogFooter>
+					<EditThresholdForm
+						key={editingBridge?.id ?? "none"}
+						bridge={editingBridge}
+						isPending={upsertThreshold.isPending}
+						onSubmit={(values) => {
+							if (!editingBridge) return;
+							upsertThreshold.mutate(
+								{
+									bridgeId: editingBridge.id,
+									safeMax: values.safeMax,
+									warningMax: values.warningMax,
+								},
+								{ onSuccess: () => setEditingBridge(null) },
+							);
+						}}
+					/>
 				</DialogContent>
 			</Dialog>
 		</div>
