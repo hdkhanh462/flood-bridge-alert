@@ -11,16 +11,14 @@ import {
 } from "react-leaflet";
 import { Link } from "react-router";
 
-// Trung tâm mặc định: Hà Nội. Toàn bộ hệ thống hiện chỉ theo dõi cầu tràn ở
-// khu vực miền Bắc nên bản đồ bị giới hạn (maxBounds) trong khu vực này, tránh
-// người dùng zoom/pan ra ngoài (hoặc thấy bản đồ thế giới khi container chưa
-// có kích thước lúc khởi tạo — xem MapSizeFix bên dưới).
-export const DEFAULT_MAP_CENTER: [number, number] = [21.0285, 105.8542];
-export const NORTHERN_VIETNAM_BOUNDS: [[number, number], [number, number]] = [
-	[19.5, 102.0],
-	[23.5, 108.5],
-];
-export const NORTHERN_VIETNAM_MIN_ZOOM = 7;
+import {
+	DEFAULT_MAP_CENTER,
+	DEFAULT_MARKER_COLOR,
+	MARKER_STATUS_COLORS,
+	NORTHERN_VIETNAM_BOUNDS,
+	NORTHERN_VIETNAM_MIN_ZOOM,
+} from "../constants";
+import type { BridgeMapMarker } from "../types";
 
 // Leaflet tính sai kích thước nếu khởi tạo lúc container đang ẩn (tab/dialog
 // chưa active) — ResizeObserver báo lại cho map ngay khi container có kích
@@ -36,27 +34,12 @@ export function MapSizeFix() {
 	return null;
 }
 
-const STATUS_COLORS: Record<string, string> = {
-	SAFE: "#16a34a",
-	WARNING: "#f59e0b",
-	DANGER: "#dc2626",
-};
-const DEFAULT_MARKER_COLOR = "#6b7280";
-
-type BridgeMarker = {
-	id: string;
-	name: string;
-	status?: string | null;
-	latitude: number;
-	longitude: number;
-};
-
 export function BridgeMap({
 	markers,
 	height = 320,
 	className,
 }: {
-	markers: BridgeMarker[];
+	markers: BridgeMapMarker[];
 	height?: number;
 	className?: string;
 }) {
@@ -89,7 +72,7 @@ export function BridgeMap({
 						color: "#fff",
 						weight: 2,
 						fillColor:
-							STATUS_COLORS[marker.status ?? ""] ?? DEFAULT_MARKER_COLOR,
+							MARKER_STATUS_COLORS[marker.status ?? ""] ?? DEFAULT_MARKER_COLOR,
 						fillOpacity: 1,
 					}}
 				>

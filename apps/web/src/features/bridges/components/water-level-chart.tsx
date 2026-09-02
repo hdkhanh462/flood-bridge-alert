@@ -1,14 +1,6 @@
 import { useMemo, useState } from "react";
 
-type Reading = {
-	level: number;
-	recordedAt: string | Date;
-};
-
-type Threshold = {
-	safeMax: number;
-	warningMax: number;
-} | null;
+import type { WaterLevelReading, WaterLevelThreshold } from "../types";
 
 const WIDTH = 640;
 const HEIGHT = 240;
@@ -27,8 +19,8 @@ export function WaterLevelChart({
 	readings,
 	threshold,
 }: {
-	readings: Reading[];
-	threshold: Threshold;
+	readings: WaterLevelReading[];
+	threshold: WaterLevelThreshold;
 }) {
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 

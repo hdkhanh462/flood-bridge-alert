@@ -10,35 +10,45 @@ import {
 import { Input } from "@flood-bridge-alert/ui/components/input";
 import { Label } from "@flood-bridge-alert/ui/components/label";
 import { useForm } from "@tanstack/react-form";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
-import z from "zod";
 
+import Loader from "@/components/loader";
 import { authClient } from "@/lib/auth-client";
 
-import Loader from "./loader";
+import { signInSchema } from "../schemas";
 
-export default function SignUpForm() {
+export default function SignInForm() {
 	const navigate = useNavigate();
-	const { isPending } = authClient.useSession();
+	const { data: session, isPending } = authClient.useSession();
+
+	const isAnonymous = (session?.user as { isAnonymous?: boolean } | undefined)
+		?.isAnonymous;
+
+	useEffect(() => {
+		if (!isPending && session && !isAnonymous) {
+			navigate(session.user.role === "admin" ? "/admin" : "/", {
+				replace: true,
+			});
+		}
+	}, [session, isAnonymous, isPending, navigate]);
 
 	const form = useForm({
 		defaultValues: {
 			email: "",
 			password: "",
-			name: "",
 		},
 		onSubmit: async ({ value }) => {
-			await authClient.signUp.email(
+			await authClient.signIn.email(
 				{
 					email: value.email,
 					password: value.password,
-					name: value.name,
 				},
 				{
-					onSuccess: () => {
-						navigate("/");
-						toast.success("Đăng ký thành công");
+					onSuccess: (ctx) => {
+						navigate(ctx.data.user.role === "admin" ? "/admin" : "/");
+						toast.success("Đăng nhập thành công");
 					},
 					onError: (error) => {
 						toast.error(error.error.message || error.error.statusText);
@@ -47,11 +57,7 @@ export default function SignUpForm() {
 			);
 		},
 		validators: {
-			onSubmit: z.object({
-				name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
-				email: z.email("Email không hợp lệ"),
-				password: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
-			}),
+			onSubmit: signInSchema,
 		},
 	});
 
@@ -62,14 +68,14 @@ export default function SignUpForm() {
 	return (
 		<Card className="mx-auto mt-10 w-full max-w-md">
 			<CardHeader>
-				<CardTitle>Tạo tài khoản</CardTitle>
+				<CardTitle>Đăng nhập</CardTitle>
 				<CardDescription>
-					Đăng ký để nhận cảnh báo và quản lý thông tin cá nhân
+					Đăng nhập để truy cập khu vực quản trị
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
-					id="sign-up-form"
+					id="sign-in-form"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
@@ -77,28 +83,6 @@ export default function SignUpForm() {
 					}}
 					className="space-y-4"
 				>
-					<form.Field name="name">
-						{(field) => (
-							<div className="space-y-2">
-								<Label htmlFor={field.name}>Tên</Label>
-								<Input
-									id={field.name}
-									name={field.name}
-									placeholder="Nguyễn Văn A"
-									autoComplete="name"
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(e.target.value)}
-								/>
-								{field.state.meta.errors.map((error) => (
-									<p key={error?.message} className="text-destructive text-sm">
-										{error?.message}
-									</p>
-								))}
-							</div>
-						)}
-					</form.Field>
-
 					<form.Field name="email">
 						{(field) => (
 							<div className="space-y-2">
@@ -130,8 +114,8 @@ export default function SignUpForm() {
 									id={field.name}
 									name={field.name}
 									type="password"
-									placeholder="Tối thiểu 8 ký tự"
-									autoComplete="new-password"
+									placeholder="Nhập mật khẩu"
+									autoComplete="current-password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
@@ -156,21 +140,21 @@ export default function SignUpForm() {
 					{({ canSubmit, isSubmitting }) => (
 						<Button
 							type="submit"
-							form="sign-up-form"
+							form="sign-in-form"
 							className="w-full"
 							disabled={!canSubmit || isSubmitting}
 						>
-							{isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
+							{isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
 						</Button>
 					)}
 				</form.Subscribe>
 				<p className="text-muted-foreground text-sm">
-					Đã có tài khoản?{" "}
+					Chưa có tài khoản?{" "}
 					<Link
-						to="/login"
+						to="/register"
 						className="font-medium text-primary underline-offset-4 hover:underline"
 					>
-						Đăng nhập
+						Đăng ký
 					</Link>
 				</p>
 			</CardFooter>

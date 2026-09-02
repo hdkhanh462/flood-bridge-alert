@@ -15,10 +15,11 @@ import { toast } from "sonner";
 
 import {
 	DEFAULT_MAP_CENTER,
-	MapSizeFix,
 	NORTHERN_VIETNAM_BOUNDS,
 	NORTHERN_VIETNAM_MIN_ZOOM,
-} from "./bridge-map";
+} from "../constants";
+import type { Coords } from "../types";
+import { MapSizeFix } from "./bridge-map";
 
 const pinIcon = L.divIcon({
 	className: "location-picker-pin",
@@ -30,8 +31,6 @@ const pinIcon = L.divIcon({
 	iconAnchor: [14, 34],
 	popupAnchor: [0, -30],
 });
-
-type Coords = { lat: number; lng: number };
 
 function ClickHandler({ onPick }: { onPick: (coords: Coords) => void }) {
 	useMapEvents({
