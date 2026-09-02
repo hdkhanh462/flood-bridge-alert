@@ -28,6 +28,8 @@ export const adminRouter = {
 					id: bridge.id,
 					name: bridge.name,
 					location: bridge.location,
+					latitude: bridge.latitude,
+					longitude: bridge.longitude,
 					threshold: bridge.threshold,
 					latestReading,
 					sensorStatus: toSensorStatus(latestReading?.recordedAt ?? null),
@@ -40,11 +42,18 @@ export const adminRouter = {
 				z.object({
 					name: z.string().min(1),
 					location: z.string().min(1).optional(),
+					latitude: z.number().min(-90).max(90).optional(),
+					longitude: z.number().min(-180).max(180).optional(),
 				}),
 			)
 			.handler(async ({ input }) => {
 				return await prisma.bridge.create({
-					data: { name: input.name, location: input.location },
+					data: {
+						name: input.name,
+						location: input.location,
+						latitude: input.latitude,
+						longitude: input.longitude,
+					},
 				});
 			}),
 
@@ -54,13 +63,20 @@ export const adminRouter = {
 					id: z.string().min(1),
 					name: z.string().min(1),
 					location: z.string().min(1).optional(),
+					latitude: z.number().min(-90).max(90).optional(),
+					longitude: z.number().min(-180).max(180).optional(),
 				}),
 			)
 			.handler(async ({ input }) => {
 				try {
 					return await prisma.bridge.update({
 						where: { id: input.id },
-						data: { name: input.name, location: input.location },
+						data: {
+							name: input.name,
+							location: input.location,
+							latitude: input.latitude,
+							longitude: input.longitude,
+						},
 					});
 				} catch {
 					throw new ORPCError("NOT_FOUND");

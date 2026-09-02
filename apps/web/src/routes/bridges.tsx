@@ -13,10 +13,17 @@ import {
 	EmptyTitle,
 } from "@flood-bridge-alert/ui/components/empty";
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "@flood-bridge-alert/ui/components/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { Waves } from "lucide-react";
 import { Link } from "react-router";
 
+import { BridgeMap } from "@/components/bridge-map";
 import { NotificationToggle } from "@/components/notification-toggle";
 import { StatusBadge } from "@/components/status-badge";
 import { useDocumentTitle } from "@/hooks/use-document-title";
@@ -25,6 +32,12 @@ import { orpc } from "@/utils/orpc";
 export default function Bridges() {
 	useDocumentTitle("Trạng thái cầu tràn");
 	const bridges = useQuery(orpc.bridge.list.queryOptions());
+	const locatedBridges =
+		bridges.data?.filter(
+			(bridge) => bridge.latitude != null && bridge.longitude != null,
+		) ?? [];
+	const missingLocationCount =
+		(bridges.data?.length ?? 0) - locatedBridges.length;
 
 	return (
 		<div className="container mx-auto max-w-4xl px-4 py-6 sm:py-10">
@@ -53,46 +66,78 @@ export default function Bridges() {
 					</EmptyHeader>
 				</Empty>
 			) : (
-				<div className="grid gap-4 sm:grid-cols-2">
-					{bridges.data?.map((bridge) => (
-						<Card key={bridge.id}>
-							<CardHeader className="flex flex-row items-start justify-between gap-2">
-								<div>
-									<CardTitle>
-										<Link
-											to={`/bridges/${bridge.id}`}
-											className="hover:underline"
-										>
-											{bridge.name}
-										</Link>
-									</CardTitle>
-									{bridge.location ? (
-										<CardDescription>{bridge.location}</CardDescription>
-									) : null}
-								</div>
-								<StatusBadge status={bridge.latestReading?.status} />
-							</CardHeader>
-							<CardContent>
-								{bridge.latestReading ? (
-									<p className="text-muted-foreground text-sm">
-										Mực nước hiện tại:{" "}
-										<span className="font-medium text-foreground">
-											{bridge.latestReading.level} m
-										</span>{" "}
-										· Cập nhật lúc{" "}
-										{new Date(bridge.latestReading.recordedAt).toLocaleString(
-											"vi-VN",
+				<Tabs defaultValue="grid">
+					<TabsList className="mb-4">
+						<TabsTrigger value="grid">Lưới</TabsTrigger>
+						<TabsTrigger value="map">Bản đồ</TabsTrigger>
+					</TabsList>
+
+					<TabsContent value="grid">
+						<div className="grid gap-4 sm:grid-cols-2">
+							{bridges.data?.map((bridge) => (
+								<Card key={bridge.id}>
+									<CardHeader className="flex flex-row items-start justify-between gap-2">
+										<div>
+											<CardTitle>
+												<Link
+													to={`/bridges/${bridge.id}`}
+													className="hover:underline"
+												>
+													{bridge.name}
+												</Link>
+											</CardTitle>
+											{bridge.location ? (
+												<CardDescription>{bridge.location}</CardDescription>
+											) : null}
+										</div>
+										<StatusBadge status={bridge.latestReading?.status} />
+									</CardHeader>
+									<CardContent>
+										{bridge.latestReading ? (
+											<p className="text-muted-foreground text-sm">
+												Mực nước hiện tại:{" "}
+												<span className="font-medium text-foreground">
+													{bridge.latestReading.level} m
+												</span>{" "}
+												· Cập nhật lúc{" "}
+												{new Date(
+													bridge.latestReading.recordedAt,
+												).toLocaleString("vi-VN")}
+											</p>
+										) : (
+											<p className="text-muted-foreground text-sm">
+												Chưa nhận được dữ liệu mực nước.
+											</p>
 										)}
-									</p>
-								) : (
-									<p className="text-muted-foreground text-sm">
-										Chưa nhận được dữ liệu mực nước.
-									</p>
-								)}
-							</CardContent>
-						</Card>
-					))}
-				</div>
+									</CardContent>
+								</Card>
+							))}
+						</div>
+					</TabsContent>
+
+					<TabsContent value="map">
+						<div className="space-y-2">
+							<div className="overflow-hidden rounded-md border">
+								<BridgeMap
+									markers={locatedBridges.map((bridge) => ({
+										id: bridge.id,
+										name: bridge.name,
+										status: bridge.latestReading?.status,
+										latitude: bridge.latitude as number,
+										longitude: bridge.longitude as number,
+									}))}
+									height={420}
+								/>
+							</div>
+							{missingLocationCount > 0 ? (
+								<p className="text-muted-foreground text-xs">
+									{missingLocationCount} cầu chưa được cấu hình vị trí nên không
+									hiển thị trên bản đồ.
+								</p>
+							) : null}
+						</div>
+					</TabsContent>
+				</Tabs>
 			)}
 		</div>
 	);

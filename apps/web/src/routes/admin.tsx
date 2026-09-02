@@ -40,14 +40,24 @@ import {
 	TabsTrigger,
 } from "@flood-bridge-alert/ui/components/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Pencil, Plus, ShieldAlert, Trash2 } from "lucide-react";
+import {
+	Loader2,
+	MapPin,
+	Pencil,
+	Plus,
+	ShieldAlert,
+	Trash2,
+} from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
+import { LocationPicker } from "@/components/location-picker";
 import { SensorStatusBadge, StatusBadge } from "@/components/status-badge";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { authClient } from "@/lib/auth-client";
 import { orpc } from "@/utils/orpc";
+
+type Coords = { lat: number; lng: number };
 
 type AdminBridge = NonNullable<
 	ReturnType<typeof useAdminBridges>["data"]
@@ -96,6 +106,11 @@ export default function Admin() {
 			onSuccess: () => bridges.refetch(),
 		}),
 	);
+	const updateBridge = useMutation(
+		orpc.admin.bridge.update.mutationOptions({
+			onSuccess: () => bridges.refetch(),
+		}),
+	);
 	const upsertThreshold = useMutation(
 		orpc.admin.threshold.upsert.mutationOptions({
 			onSuccess: () => bridges.refetch(),
@@ -141,7 +156,15 @@ export default function Admin() {
 	});
 
 	const [addOpen, setAddOpen] = useState(false);
+	const [newBridgeLocation, setNewBridgeLocation] = useState<Coords | null>(
+		null,
+	);
 	const [editingBridge, setEditingBridge] = useState<AdminBridge | null>(null);
+	const [editingBridgeDetails, setEditingBridgeDetails] =
+		useState<AdminBridge | null>(null);
+	const [editBridgeLocation, setEditBridgeLocation] = useState<Coords | null>(
+		null,
+	);
 
 	function handleCreateBridge(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -150,8 +173,37 @@ export default function Admin() {
 		const location = String(formData.get("location") ?? "").trim();
 		if (!name) return;
 		createBridge.mutate(
-			{ name, location: location || undefined },
-			{ onSuccess: () => setAddOpen(false) },
+			{
+				name,
+				location: location || undefined,
+				latitude: newBridgeLocation?.lat,
+				longitude: newBridgeLocation?.lng,
+			},
+			{
+				onSuccess: () => {
+					setAddOpen(false);
+					setNewBridgeLocation(null);
+				},
+			},
+		);
+	}
+
+	function handleUpdateBridgeDetails(e: FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+		if (!editingBridgeDetails) return;
+		const formData = new FormData(e.currentTarget);
+		const name = String(formData.get("name") ?? "").trim();
+		const location = String(formData.get("location") ?? "").trim();
+		if (!name) return;
+		updateBridge.mutate(
+			{
+				id: editingBridgeDetails.id,
+				name,
+				location: location || undefined,
+				latitude: editBridgeLocation?.lat,
+				longitude: editBridgeLocation?.lng,
+			},
+			{ onSuccess: () => setEditingBridgeDetails(null) },
 		);
 	}
 
@@ -221,7 +273,13 @@ export default function Admin() {
 									Quản lý cầu tràn và ngưỡng cảnh báo
 								</CardDescription>
 							</div>
-							<Dialog open={addOpen} onOpenChange={setAddOpen}>
+							<Dialog
+								open={addOpen}
+								onOpenChange={(open) => {
+									setAddOpen(open);
+									if (!open) setNewBridgeLocation(null);
+								}}
+							>
 								<DialogTrigger render={<Button size="sm" />}>
 									<Plus className="h-4 w-4" />
 									Thêm cầu
@@ -250,6 +308,13 @@ export default function Admin() {
 												id="location"
 												name="location"
 												placeholder="Huyện Củ Chi, TP.HCM"
+											/>
+										</div>
+										<div className="grid gap-2">
+											<Label>Vị trí trên bản đồ</Label>
+											<LocationPicker
+												value={newBridgeLocation}
+												onChange={setNewBridgeLocation}
 											/>
 										</div>
 									</form>
@@ -316,6 +381,25 @@ export default function Admin() {
 													)}
 												</TableCell>
 												<TableCell className="text-right">
+													<Button
+														variant="ghost"
+														size="icon-sm"
+														aria-label="Sửa vị trí"
+														onClick={() => {
+															setEditingBridgeDetails(bridge);
+															setEditBridgeLocation(
+																bridge.latitude != null &&
+																	bridge.longitude != null
+																	? {
+																			lat: bridge.latitude,
+																			lng: bridge.longitude,
+																		}
+																	: null,
+															);
+														}}
+													>
+														<MapPin className="h-4 w-4" />
+													</Button>
 													<Button
 														variant="ghost"
 														size="icon-sm"
@@ -527,6 +611,61 @@ export default function Admin() {
 					</Card>
 				</TabsContent>
 			</Tabs>
+
+			<Dialog
+				open={editingBridgeDetails !== null}
+				onOpenChange={(open) => !open && setEditingBridgeDetails(null)}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Sửa cầu — {editingBridgeDetails?.name}</DialogTitle>
+					</DialogHeader>
+					<form
+						id="edit-bridge-form"
+						onSubmit={handleUpdateBridgeDetails}
+						className="grid gap-4"
+					>
+						<div className="grid gap-2">
+							<Label htmlFor="edit-name">Tên cầu</Label>
+							<Input
+								id="edit-name"
+								name="name"
+								defaultValue={editingBridgeDetails?.name}
+								required
+							/>
+						</div>
+						<div className="grid gap-2">
+							<Label htmlFor="edit-location">Khu vực</Label>
+							<Input
+								id="edit-location"
+								name="location"
+								defaultValue={editingBridgeDetails?.location ?? ""}
+								placeholder="Huyện Củ Chi, TP.HCM"
+							/>
+						</div>
+						<div className="grid gap-2">
+							<Label>Vị trí trên bản đồ</Label>
+							<LocationPicker
+								value={editBridgeLocation}
+								onChange={setEditBridgeLocation}
+							/>
+						</div>
+					</form>
+					<DialogFooter>
+						<Button
+							type="submit"
+							form="edit-bridge-form"
+							disabled={updateBridge.isPending}
+						>
+							{updateBridge.isPending ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : (
+								"Lưu"
+							)}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 
 			<Dialog
 				open={editingBridge !== null}

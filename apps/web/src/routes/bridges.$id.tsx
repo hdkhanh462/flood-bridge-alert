@@ -14,9 +14,10 @@ import {
 	TableRow,
 } from "@flood-bridge-alert/ui/components/table";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MapPin } from "lucide-react";
 import { Link, useParams } from "react-router";
 
+import { BridgeLocationDialog } from "@/components/bridge-location-dialog";
 import { StatusBadge } from "@/components/status-badge";
 import { WaterLevelChart } from "@/components/water-level-chart";
 import { useDocumentTitle } from "@/hooks/use-document-title";
@@ -63,7 +64,21 @@ export default function BridgeDetail() {
 							</p>
 						) : null}
 					</div>
-					<StatusBadge status={bridge.data.latestReading?.status} />
+					<div className="flex items-center gap-2">
+						<StatusBadge status={bridge.data.latestReading?.status} />
+						<BridgeLocationDialog
+							bridge={{
+								id: bridge.data.id,
+								name: bridge.data.name,
+								status: bridge.data.latestReading?.status,
+								latitude: bridge.data.latitude,
+								longitude: bridge.data.longitude,
+							}}
+						>
+							<MapPin className="h-4 w-4" />
+							Xem vị trí trên bản đồ
+						</BridgeLocationDialog>
+					</div>
 				</div>
 			) : (
 				<p className="mt-4 text-muted-foreground">Không tìm thấy cầu này.</p>

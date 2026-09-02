@@ -8,6 +8,8 @@ function toBridgeSummary(bridge: {
 	id: string;
 	name: string;
 	location: string | null;
+	latitude: number | null;
+	longitude: number | null;
 	readings: { level: number; status: string; recordedAt: Date }[];
 }) {
 	const latestReading = bridge.readings[0] ?? null;
@@ -15,6 +17,8 @@ function toBridgeSummary(bridge: {
 		id: bridge.id,
 		name: bridge.name,
 		location: bridge.location,
+		latitude: bridge.latitude,
+		longitude: bridge.longitude,
 		latestReading,
 	};
 }
