@@ -38,7 +38,9 @@ export default function UserMenu() {
 		);
 	}
 
-	const initial = session.user.name?.trim().charAt(0).toUpperCase() || "?";
+	const isAnonymous = (session.user as { isAnonymous?: boolean }).isAnonymous;
+	const displayName = isAnonymous ? "Khách" : session.user.name;
+	const initial = displayName.trim().charAt(0).toUpperCase() || "?";
 
 	return (
 		<DropdownMenu>
@@ -48,23 +50,28 @@ export default function UserMenu() {
 				<Avatar size="sm">
 					<AvatarFallback>{initial}</AvatarFallback>
 				</Avatar>
-				<span className="hidden sm:inline">{session.user.name}</span>
+				<span className="hidden sm:inline">{displayName}</span>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="w-72 bg-card">
 				<DropdownMenuGroup>
-					<DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
+					<DropdownMenuLabel className="font-semibold text-foreground text-sm">
+						{displayName}
+					</DropdownMenuLabel>
+					{isAnonymous ? null : (
+						<DropdownMenuLabel className="-mt-1.5 whitespace-normal break-all pt-0 font-normal">
+							{session.user.email}
+						</DropdownMenuLabel>
+					)}
 					<DropdownMenuSeparator />
-					<DropdownMenuItem className="whitespace-normal break-all">
-						{session.user.email}
-					</DropdownMenuItem>
-					<DropdownMenuItem
-						nativeButton={false}
-						render={<Link to="/account" />}
-					>
-						<UserCog className="h-4 w-4" />
-						Quản lý tài khoản
-					</DropdownMenuItem>
-					<DropdownMenuSeparator />
+					{isAnonymous ? null : (
+						<DropdownMenuItem
+							nativeButton={false}
+							render={<Link to="/account" />}
+						>
+							<UserCog className="h-4 w-4" />
+							Quản lý tài khoản
+						</DropdownMenuItem>
+					)}
 					<DropdownMenuItem
 						variant="destructive"
 						onClick={() => {

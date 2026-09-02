@@ -290,11 +290,14 @@ export default function Account() {
 	const { data: session, isPending } = authClient.useSession();
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		if (!session && !isPending) navigate("/login");
-	}, [session, isPending, navigate]);
+	const isAnonymous = (session?.user as { isAnonymous?: boolean } | undefined)
+		?.isAnonymous;
 
-	if (isPending || !session) {
+	useEffect(() => {
+		if (!isPending && (!session || isAnonymous)) navigate("/login");
+	}, [session, isAnonymous, isPending, navigate]);
+
+	if (isPending || !session || isAnonymous) {
 		return (
 			<div className="container mx-auto max-w-2xl space-y-6 px-4 py-6 sm:py-10">
 				<Skeleton className="h-48 w-full" />

@@ -34,8 +34,9 @@ export default function SignInForm() {
 					password: value.password,
 				},
 				{
-					onSuccess: () => {
-						navigate("/admin");
+					onSuccess: async () => {
+						const { data: session } = await authClient.getSession();
+						navigate(session?.user.role === "admin" ? "/admin" : "/");
 						toast.success("Đăng nhập thành công");
 					},
 					onError: (error) => {

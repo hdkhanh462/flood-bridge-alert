@@ -37,7 +37,7 @@ export default function SignUpForm() {
 				},
 				{
 					onSuccess: () => {
-						navigate("/admin");
+						navigate("/");
 						toast.success("Đăng ký thành công");
 					},
 					onError: (error) => {

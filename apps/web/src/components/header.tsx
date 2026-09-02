@@ -16,8 +16,8 @@ import UserMenu from "./user-menu";
 const LINKS = [
 	{ to: "/", label: "Trang chủ" },
 	{ to: "/bridges", label: "Cầu tràn" },
+	{ to: "/cai-dat", label: "Cài đặt" },
 	{ to: "/huong-dan-an-toan", label: "Hướng dẫn an toàn" },
-	{ to: "/admin", label: "Quản trị" },
 ] as const;
 
 function NavLinks({

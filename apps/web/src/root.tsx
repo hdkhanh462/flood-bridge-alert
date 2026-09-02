@@ -1,15 +1,18 @@
 import { Toaster } from "@flood-bridge-alert/ui/components/sonner";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { Outlet } from "react-router";
 
 import "./index.css";
 import { ThemeProvider } from "./components/theme-provider";
-import { queryClient } from "./utils/orpc";
+import { persistOptions, queryClient } from "./utils/orpc";
 
 export default function Root() {
 	return (
-		<QueryClientProvider client={queryClient}>
+		<PersistQueryClientProvider
+			client={queryClient}
+			persistOptions={persistOptions}
+		>
 			<ThemeProvider
 				attribute="class"
 				defaultTheme="dark"
@@ -20,6 +23,6 @@ export default function Root() {
 				<Toaster richColors />
 			</ThemeProvider>
 			<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
-		</QueryClientProvider>
+		</PersistQueryClientProvider>
 	);
 }
