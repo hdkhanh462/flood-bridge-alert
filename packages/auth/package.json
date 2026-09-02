@@ -1,24 +1,24 @@
 {
-  "name": "@flood-bridge-alert/auth",
-  "type": "module",
-  "exports": {
-    ".": {
-      "default": "./src/index.ts"
-    },
-    "./*": {
-      "default": "./src/*.ts"
-    }
-  },
-  "scripts": {},
-  "dependencies": {
-    "@flood-bridge-alert/db": "workspace:*",
-    "@flood-bridge-alert/env": "workspace:*",
-    "better-auth": "catalog:",
-    "dotenv": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@flood-bridge-alert/config": "workspace:*",
-    "typescript": "catalog:"
-  }
+	"name": "@flood-bridge-alert/auth",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {},
+	"dependencies": {
+		"@flood-bridge-alert/db": "workspace:*",
+		"@flood-bridge-alert/env": "workspace:*",
+		"better-auth": "catalog:",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@flood-bridge-alert/config": "workspace:*",
+		"typescript": "catalog:"
+	}
 }

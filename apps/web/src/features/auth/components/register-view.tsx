@@ -5,12 +5,12 @@ import { authClient } from "@/lib/auth-client";
 import { SignUpCard } from "./sign-up-card";
 
 export function RegisterView() {
-	useDocumentTitle("Đăng ký");
-	const { isPending } = authClient.useSession();
+  useDocumentTitle("Đăng ký");
+  const { isPending } = authClient.useSession();
 
-	if (isPending) {
-		return <Loader />;
-	}
+  if (isPending) {
+    return <Loader />;
+  }
 
-	return <SignUpCard />;
+  return <SignUpCard />;
 }

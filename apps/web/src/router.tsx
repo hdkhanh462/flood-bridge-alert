@@ -15,31 +15,31 @@ import Login from "./routes/login";
 import Register from "./routes/register";
 
 export const router = createBrowserRouter([
-	{
-		path: "/",
-		element: <Root />,
-		errorElement: <ErrorBoundary />,
-		children: [
-			{
-				element: <MainLayout />,
-				children: [
-					{ index: true, element: <Home /> },
-					{ path: "bridges", element: <Bridges /> },
-					{ path: "bridges/:id", element: <BridgeDetail /> },
-					{ path: "guides/safety", element: <GuidesSafety /> },
-					{ path: "guides/install", element: <GuidesInstall /> },
-					{ path: "admin", element: <Admin /> },
-					{ path: "account", element: <Account /> },
-					{ path: "dashboard", element: <Navigate to="/admin" replace /> },
-				],
-			},
-			{
-				element: <AuthLayout />,
-				children: [
-					{ path: "login", element: <Login /> },
-					{ path: "register", element: <Register /> },
-				],
-			},
-		],
-	},
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <Home /> },
+          { path: "bridges", element: <Bridges /> },
+          { path: "bridges/:id", element: <BridgeDetail /> },
+          { path: "guides/safety", element: <GuidesSafety /> },
+          { path: "guides/install", element: <GuidesInstall /> },
+          { path: "admin", element: <Admin /> },
+          { path: "account", element: <Account /> },
+          { path: "dashboard", element: <Navigate to="/admin" replace /> },
+        ],
+      },
+      {
+        element: <AuthLayout />,
+        children: [
+          { path: "login", element: <Login /> },
+          { path: "register", element: <Register /> },
+        ],
+      },
+    ],
+  },
 ]);
