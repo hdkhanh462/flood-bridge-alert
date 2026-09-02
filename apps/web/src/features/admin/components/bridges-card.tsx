@@ -38,7 +38,7 @@ export function BridgesCard({
   onCreateSubmit,
   onEditLocation,
   onEditThreshold,
-  onDelete,
+  onRequestDelete,
 }: {
   bridges: AdminBridge[];
   isLoading: boolean;
@@ -48,7 +48,7 @@ export function BridgesCard({
   onCreateSubmit: (values: BridgeFormValues) => void;
   onEditLocation: (bridge: AdminBridge) => void;
   onEditThreshold: (bridge: AdminBridge) => void;
-  onDelete: (bridge: AdminBridge) => void;
+  onRequestDelete: (bridge: AdminBridge) => void;
 }) {
   return (
     <Card>
@@ -135,7 +135,8 @@ export function BridgesCard({
                       variant="ghost"
                       size="icon-sm"
                       aria-label="Xóa cầu"
-                      onClick={() => onDelete(bridge)}
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => onRequestDelete(bridge)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

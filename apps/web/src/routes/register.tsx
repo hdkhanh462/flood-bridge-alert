@@ -1,6 +1,6 @@
 import { RegisterView } from "@/features/auth/components/register-view";
 
-export default function Register() {
+export  function RegisterPage() {
   return (
     <div className="w-full max-w-md">
       <RegisterView />

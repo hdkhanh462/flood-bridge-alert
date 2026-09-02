@@ -65,7 +65,7 @@ export function BridgeDetailView() {
               }}
             >
               <MapPin className="h-4 w-4" />
-              Xem vị trí trên bản đồ
+              Vị trí
             </BridgeLocationDialog>
           </div>
         </div>
