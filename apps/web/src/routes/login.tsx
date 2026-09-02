@@ -1,7 +1,9 @@
-import SignInForm from "@/features/auth/components/sign-in-form";
-import { useDocumentTitle } from "@/hooks/use-document-title";
+import { LoginView } from "@/features/auth/components/login-view";
 
 export default function Login() {
-	useDocumentTitle("Đăng nhập");
-	return <SignInForm />;
+	return (
+		<div className="w-full max-w-md">
+			<LoginView />
+		</div>
+	);
 }

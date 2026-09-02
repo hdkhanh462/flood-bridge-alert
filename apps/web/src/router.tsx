@@ -9,8 +9,8 @@ import Account from "./routes/account";
 import Admin from "./routes/admin";
 import Bridges from "./routes/bridges";
 import BridgeDetail from "./routes/bridges.$id";
-import InstallGuide from "./routes/cai-dat";
-import SafetyGuide from "./routes/huong-dan-an-toan";
+import GuidesInstall from "./routes/guides.install";
+import GuidesSafety from "./routes/guides.safety";
 import Login from "./routes/login";
 import Register from "./routes/register";
 
@@ -26,8 +26,8 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Home /> },
 					{ path: "bridges", element: <Bridges /> },
 					{ path: "bridges/:id", element: <BridgeDetail /> },
-					{ path: "huong-dan-an-toan", element: <SafetyGuide /> },
-					{ path: "cai-dat", element: <InstallGuide /> },
+					{ path: "guides/safety", element: <GuidesSafety /> },
+					{ path: "guides/install", element: <GuidesInstall /> },
 					{ path: "admin", element: <Admin /> },
 					{ path: "account", element: <Account /> },
 					{ path: "dashboard", element: <Navigate to="/admin" replace /> },

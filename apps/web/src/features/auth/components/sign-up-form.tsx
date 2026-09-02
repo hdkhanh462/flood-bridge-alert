@@ -1,26 +1,16 @@
 import { Button } from "@flood-bridge-alert/ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@flood-bridge-alert/ui/components/card";
 import { Input } from "@flood-bridge-alert/ui/components/input";
 import { Label } from "@flood-bridge-alert/ui/components/label";
 import { useForm } from "@tanstack/react-form";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
-import Loader from "@/components/loader";
 import { authClient } from "@/lib/auth-client";
 
 import { signUpSchema } from "../schemas";
 
-export default function SignUpForm() {
+export function SignUpForm() {
 	const navigate = useNavigate();
-	const { isPending } = authClient.useSession();
 
 	const form = useForm({
 		defaultValues: {
@@ -51,125 +41,102 @@ export default function SignUpForm() {
 		},
 	});
 
-	if (isPending) {
-		return <Loader />;
-	}
-
 	return (
-		<Card className="mx-auto mt-10 w-full max-w-md">
-			<CardHeader>
-				<CardTitle>Tạo tài khoản</CardTitle>
-				<CardDescription>
-					Đăng ký để nhận cảnh báo và quản lý thông tin cá nhân
-				</CardDescription>
-			</CardHeader>
-			<CardContent>
-				<form
-					id="sign-up-form"
-					onSubmit={(e) => {
-						e.preventDefault();
-						e.stopPropagation();
-						form.handleSubmit();
-					}}
-					className="space-y-4"
-				>
-					<form.Field name="name">
-						{(field) => (
-							<div className="space-y-2">
-								<Label htmlFor={field.name}>Tên</Label>
-								<Input
-									id={field.name}
-									name={field.name}
-									placeholder="Nguyễn Văn A"
-									autoComplete="name"
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(e.target.value)}
-								/>
-								{field.state.meta.errors.map((error) => (
-									<p key={error?.message} className="text-destructive text-sm">
-										{error?.message}
-									</p>
-								))}
-							</div>
-						)}
-					</form.Field>
-
-					<form.Field name="email">
-						{(field) => (
-							<div className="space-y-2">
-								<Label htmlFor={field.name}>Email</Label>
-								<Input
-									id={field.name}
-									name={field.name}
-									type="email"
-									placeholder="you@example.com"
-									autoComplete="email"
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(e.target.value)}
-								/>
-								{field.state.meta.errors.map((error) => (
-									<p key={error?.message} className="text-destructive text-sm">
-										{error?.message}
-									</p>
-								))}
-							</div>
-						)}
-					</form.Field>
-
-					<form.Field name="password">
-						{(field) => (
-							<div className="space-y-2">
-								<Label htmlFor={field.name}>Mật khẩu</Label>
-								<Input
-									id={field.name}
-									name={field.name}
-									type="password"
-									placeholder="Tối thiểu 8 ký tự"
-									autoComplete="new-password"
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(e.target.value)}
-								/>
-								{field.state.meta.errors.map((error) => (
-									<p key={error?.message} className="text-destructive text-sm">
-										{error?.message}
-									</p>
-								))}
-							</div>
-						)}
-					</form.Field>
-				</form>
-			</CardContent>
-			<CardFooter className="flex-col gap-4">
-				<form.Subscribe
-					selector={(state) => ({
-						canSubmit: state.canSubmit,
-						isSubmitting: state.isSubmitting,
-					})}
-				>
-					{({ canSubmit, isSubmitting }) => (
-						<Button
-							type="submit"
-							form="sign-up-form"
-							className="w-full"
-							disabled={!canSubmit || isSubmitting}
-						>
-							{isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
-						</Button>
+		<>
+			<form
+				id="sign-up-form"
+				onSubmit={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					form.handleSubmit();
+				}}
+				className="space-y-4"
+			>
+				<form.Field name="name">
+					{(field) => (
+						<div className="space-y-2">
+							<Label htmlFor={field.name}>Tên</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								placeholder="Nguyễn Văn A"
+								autoComplete="name"
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-destructive text-sm">
+									{error?.message}
+								</p>
+							))}
+						</div>
 					)}
-				</form.Subscribe>
-				<p className="text-muted-foreground text-sm">
-					Đã có tài khoản?{" "}
-					<Link
-						to="/login"
-						className="font-medium text-primary underline-offset-4 hover:underline"
+				</form.Field>
+
+				<form.Field name="email">
+					{(field) => (
+						<div className="space-y-2">
+							<Label htmlFor={field.name}>Email</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="email"
+								placeholder="you@example.com"
+								autoComplete="email"
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-destructive text-sm">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+
+				<form.Field name="password">
+					{(field) => (
+						<div className="space-y-2">
+							<Label htmlFor={field.name}>Mật khẩu</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="password"
+								placeholder="Tối thiểu 8 ký tự"
+								autoComplete="new-password"
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-destructive text-sm">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</form>
+			<form.Subscribe
+				selector={(state) => ({
+					canSubmit: state.canSubmit,
+					isSubmitting: state.isSubmitting,
+				})}
+			>
+				{({ canSubmit, isSubmitting }) => (
+					<Button
+						type="submit"
+						form="sign-up-form"
+						className="mt-4 w-full"
+						disabled={!canSubmit || isSubmitting}
 					>
-						Đăng nhập
-					</Link>
-				</p>
-			</CardFooter>
-		</Card>
+						{isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
+					</Button>
+				)}
+			</form.Subscribe>
+		</>
 	);
 }

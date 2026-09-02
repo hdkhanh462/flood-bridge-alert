@@ -1,18 +1,5 @@
 import { Button } from "@flood-bridge-alert/ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@flood-bridge-alert/ui/components/card";
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableRow,
-} from "@flood-bridge-alert/ui/components/table";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { Link, useParams } from "react-router";
@@ -20,11 +7,12 @@ import { Link, useParams } from "react-router";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { orpc } from "@/utils/orpc";
 
+import { AlertHistoryCard } from "./alert-history-card";
 import { BridgeLocationDialog } from "./bridge-location-dialog";
 import { StatusBadge } from "./status-badge";
-import { WaterLevelChart } from "./water-level-chart";
+import { WaterLevelCard } from "./water-level-card";
 
-export function BridgeDetailPage() {
+export function BridgeDetailView() {
 	useDocumentTitle("Chi tiết cầu tràn");
 	const { id } = useParams<{ id: string }>();
 	const bridgeId = id ?? "";
@@ -39,7 +27,7 @@ export function BridgeDetailPage() {
 	);
 
 	return (
-		<div className="container mx-auto max-w-3xl px-4 py-6 sm:py-10">
+		<>
 			<Button
 				variant="link"
 				size="sm"
@@ -85,54 +73,18 @@ export function BridgeDetailPage() {
 				<p className="mt-4 text-muted-foreground">Không tìm thấy cầu này.</p>
 			)}
 
-			<Card className="mb-6">
-				<CardHeader>
-					<CardTitle>Mực nước theo thời gian</CardTitle>
-					<CardDescription>
-						Biểu đồ mực nước gần đây và các ngưỡng cảnh báo
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					{history.isLoading ? (
-						<Skeleton className="h-[240px] w-full" />
-					) : (
-						<WaterLevelChart
-							readings={history.data?.readings ?? []}
-							threshold={history.data?.threshold ?? null}
-						/>
-					)}
-				</CardContent>
-			</Card>
+			<div className="mb-6">
+				<WaterLevelCard
+					readings={history.data?.readings ?? []}
+					threshold={history.data?.threshold ?? null}
+					isLoading={history.isLoading}
+				/>
+			</div>
 
-			<Card>
-				<CardHeader>
-					<CardTitle>Lịch sử cảnh báo</CardTitle>
-				</CardHeader>
-				<CardContent>
-					{alerts.isLoading ? (
-						<p className="text-muted-foreground text-sm">Đang tải...</p>
-					) : alerts.data?.length === 0 ? (
-						<p className="text-muted-foreground text-sm">
-							Chưa có cảnh báo nào cho cầu này.
-						</p>
-					) : (
-						<Table>
-							<TableBody>
-								{alerts.data?.map((alert) => (
-									<TableRow key={alert.id}>
-										<TableCell>
-											<StatusBadge status={alert.status} />
-										</TableCell>
-										<TableCell className="text-right text-muted-foreground">
-											{new Date(alert.createdAt).toLocaleString("vi-VN")}
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					)}
-				</CardContent>
-			</Card>
-		</div>
+			<AlertHistoryCard
+				alerts={alerts.data ?? []}
+				isLoading={alerts.isLoading}
+			/>
+		</>
 	);
 }

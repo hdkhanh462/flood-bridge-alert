@@ -5,11 +5,11 @@ import { useNavigate } from "react-router";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { authClient } from "@/lib/auth-client";
 
-import { EmailForm } from "./email-form";
-import { PasswordForm } from "./password-form";
-import { ProfileForm } from "./profile-form";
+import { EmailCard } from "./email-card";
+import { PasswordCard } from "./password-card";
+import { ProfileCard } from "./profile-card";
 
-export function AccountPage() {
+export function AccountView() {
 	useDocumentTitle("Quản lý tài khoản");
 	const { data: session, isPending } = authClient.useSession();
 	const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function AccountPage() {
 
 	if (isPending || !session || isAnonymous) {
 		return (
-			<div className="container mx-auto max-w-2xl space-y-6 px-4 py-6 sm:py-10">
+			<div className="space-y-6">
 				<Skeleton className="h-48 w-full" />
 				<Skeleton className="h-48 w-full" />
 			</div>
@@ -31,7 +31,7 @@ export function AccountPage() {
 	}
 
 	return (
-		<div className="container mx-auto max-w-2xl space-y-6 px-4 py-6 sm:py-10">
+		<div className="space-y-6">
 			<div>
 				<h1 className="font-semibold text-2xl tracking-tight">
 					Quản lý tài khoản
@@ -40,9 +40,9 @@ export function AccountPage() {
 					Cập nhật thông tin đăng nhập của tài khoản {session.user.email}
 				</p>
 			</div>
-			<ProfileForm name={session.user.name} />
-			<EmailForm email={session.user.email} />
-			<PasswordForm />
+			<ProfileCard name={session.user.name} />
+			<EmailCard email={session.user.email} />
+			<PasswordCard />
 		</div>
 	);
 }

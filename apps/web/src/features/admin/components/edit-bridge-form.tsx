@@ -1,5 +1,4 @@
 import { Button } from "@flood-bridge-alert/ui/components/button";
-import { DialogFooter } from "@flood-bridge-alert/ui/components/dialog";
 import { Input } from "@flood-bridge-alert/ui/components/input";
 import { Label } from "@flood-bridge-alert/ui/components/label";
 import { useForm } from "@tanstack/react-form";
@@ -95,25 +94,29 @@ export function EditBridgeForm({
 					)}
 				</form.Field>
 			</form>
-			<DialogFooter>
-				<form.Subscribe
-					selector={(state) => ({
-						canSubmit: state.canSubmit,
-						isSubmitting: state.isSubmitting,
-						isDirty: state.isDirty,
-					})}
-				>
-					{({ canSubmit, isSubmitting, isDirty }) => (
+			<form.Subscribe
+				selector={(state) => ({
+					canSubmit: state.canSubmit,
+					isSubmitting: state.isSubmitting,
+					isDirty: state.isDirty,
+				})}
+			>
+				{({ canSubmit, isSubmitting, isDirty }) => (
+					<div className="mt-4 flex justify-end">
 						<Button
 							type="submit"
 							form="edit-bridge-form"
 							disabled={!canSubmit || isSubmitting || !isDirty || isPending}
 						>
-							{isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lưu"}
+							{isPending ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : (
+								"Lưu"
+							)}
 						</Button>
-					)}
-				</form.Subscribe>
-			</DialogFooter>
+					</div>
+				)}
+			</form.Subscribe>
 		</>
 	);
 }

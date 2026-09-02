@@ -24,7 +24,7 @@ import { BridgesTab } from "./bridges-tab";
 import { DevicesTab } from "./devices-tab";
 import { UsersTab } from "./users-tab";
 
-export function AdminPage() {
+export function AdminView() {
 	useDocumentTitle("Quản trị cầu tràn");
 	const { data: session, isPending } = authClient.useSession();
 	const navigate = useNavigate();
@@ -35,11 +35,7 @@ export function AdminPage() {
 	}, [session, isPending, navigate]);
 
 	if (isPending) {
-		return (
-			<div className="container mx-auto max-w-5xl px-4 py-6">
-				<Skeleton className="h-8 w-64" />
-			</div>
-		);
+		return <Skeleton className="h-8 w-64" />;
 	}
 
 	if (!session) {
@@ -48,24 +44,22 @@ export function AdminPage() {
 
 	if (!isAdmin) {
 		return (
-			<div className="container mx-auto max-w-5xl px-4 py-16">
-				<Empty>
-					<EmptyHeader>
-						<EmptyMedia variant="icon">
-							<ShieldAlert />
-						</EmptyMedia>
-						<EmptyTitle>Không có quyền truy cập</EmptyTitle>
-						<EmptyDescription>
-							Bạn cần quyền quản trị viên để xem trang này.
-						</EmptyDescription>
-					</EmptyHeader>
-				</Empty>
-			</div>
+			<Empty>
+				<EmptyHeader>
+					<EmptyMedia variant="icon">
+						<ShieldAlert />
+					</EmptyMedia>
+					<EmptyTitle>Không có quyền truy cập</EmptyTitle>
+					<EmptyDescription>
+						Bạn cần quyền quản trị viên để xem trang này.
+					</EmptyDescription>
+				</EmptyHeader>
+			</Empty>
 		);
 	}
 
 	return (
-		<div className="container mx-auto max-w-5xl px-4 py-6 sm:py-10">
+		<>
 			<h1 className="mb-6 font-semibold text-2xl tracking-tight">
 				Quản trị cầu tràn
 			</h1>
@@ -91,6 +85,6 @@ export function AdminPage() {
 					<DevicesTab enabled={isAdmin} />
 				</TabsContent>
 			</Tabs>
-		</div>
+		</>
 	);
 }

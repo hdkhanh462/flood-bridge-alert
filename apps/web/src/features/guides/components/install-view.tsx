@@ -25,16 +25,16 @@ function InstallSteps({ steps }: { steps: string[] }) {
 	);
 }
 
-export function InstallGuidePage() {
+export function InstallView() {
 	useDocumentTitle("Cài đặt");
 	return (
-		<div className="container mx-auto max-w-3xl px-4 py-6 sm:py-10">
+		<>
 			<h1 className="mb-2 font-semibold text-2xl tracking-tight">
 				Cài đặt ứng dụng
 			</h1>
 			<p className="mb-6 text-muted-foreground text-sm">
-				Cài đặt flood-bridge-alert lên màn hình chính để mở nhanh và nhận thông
-				báo như một ứng dụng thông thường.
+				Cài đặt flood-bridge-alert lên màn hình chính để mở nhanh và nhận
+				thông báo như một ứng dụng thông thường.
 			</p>
 
 			<Tabs defaultValue="android">
@@ -79,6 +79,6 @@ export function InstallGuidePage() {
 					trình duyệt mới nhất và trang đã tải xong hoàn toàn.
 				</p>
 			</div>
-		</div>
+		</>
 	);
 }

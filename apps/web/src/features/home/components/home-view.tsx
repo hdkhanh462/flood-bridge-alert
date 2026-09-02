@@ -1,12 +1,5 @@
 import { Badge } from "@flood-bridge-alert/ui/components/badge";
 import { Button } from "@flood-bridge-alert/ui/components/button";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@flood-bridge-alert/ui/components/card";
-import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";
@@ -14,7 +7,9 @@ import { Link } from "react-router";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { orpc } from "@/utils/orpc";
 
-export function HomePage() {
+import { StatCard } from "./stat-card";
+
+export function HomeView() {
 	useDocumentTitle("flood-bridge-alert");
 	const healthCheck = useQuery(orpc.healthCheck.queryOptions());
 	const bridges = useQuery(orpc.bridge.list.queryOptions());
@@ -35,7 +30,7 @@ export function HomePage() {
 	}
 
 	return (
-		<div className="container mx-auto max-w-4xl px-4 py-10 sm:py-16">
+		<>
 			<section className="mb-10 flex flex-col items-start gap-4">
 				<Badge variant={healthCheck.data ? "success" : "outline"}>
 					{healthCheck.isLoading
@@ -60,7 +55,7 @@ export function HomePage() {
 					<Button
 						variant="outline"
 						nativeButton={false}
-						render={<Link to="/huong-dan-an-toan" />}
+						render={<Link to="/guides/safety" />}
 					>
 						Hướng dẫn an toàn
 					</Button>
@@ -68,49 +63,25 @@ export function HomePage() {
 			</section>
 
 			<section className="grid gap-4 sm:grid-cols-3">
-				<Card>
-					<CardHeader>
-						<CardDescription>
-							<Badge variant="success">An toàn</Badge>
-						</CardDescription>
-						<CardTitle className="font-semibold text-3xl">
-							{bridges.isLoading ? (
-								<Skeleton className="h-9 w-12" />
-							) : (
-								counts.SAFE
-							)}
-						</CardTitle>
-					</CardHeader>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardDescription>
-							<Badge variant="warning">Cảnh báo</Badge>
-						</CardDescription>
-						<CardTitle className="font-semibold text-3xl">
-							{bridges.isLoading ? (
-								<Skeleton className="h-9 w-12" />
-							) : (
-								counts.WARNING
-							)}
-						</CardTitle>
-					</CardHeader>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardDescription>
-							<Badge variant="destructive">Nguy hiểm</Badge>
-						</CardDescription>
-						<CardTitle className="font-semibold text-3xl">
-							{bridges.isLoading ? (
-								<Skeleton className="h-9 w-12" />
-							) : (
-								counts.DANGER
-							)}
-						</CardTitle>
-					</CardHeader>
-				</Card>
+				<StatCard
+					label="An toàn"
+					variant="success"
+					value={counts.SAFE}
+					isLoading={bridges.isLoading}
+				/>
+				<StatCard
+					label="Cảnh báo"
+					variant="warning"
+					value={counts.WARNING}
+					isLoading={bridges.isLoading}
+				/>
+				<StatCard
+					label="Nguy hiểm"
+					variant="destructive"
+					value={counts.DANGER}
+					isLoading={bridges.isLoading}
+				/>
 			</section>
-		</div>
+		</>
 	);
 }
