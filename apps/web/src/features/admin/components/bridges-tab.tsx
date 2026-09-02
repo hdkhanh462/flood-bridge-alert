@@ -5,85 +5,120 @@ import { orpc } from "@/utils/orpc";
 
 import { useAdminBridges } from "../hooks/use-admin-bridges";
 import type { AdminBridge } from "../types";
+import type { BridgeFormValues } from "./bridge-form";
+import { BridgeFormDialog } from "./bridge-form-dialog";
 import { BridgesCard } from "./bridges-card";
-import { EditBridgeDialog } from "./edit-bridge-dialog";
 import { EditThresholdDialog } from "./edit-threshold-dialog";
 
 export function BridgesTab({ enabled }: { enabled: boolean }) {
-	const queryClient = useQueryClient();
-	const bridges = useAdminBridges(enabled);
+  const queryClient = useQueryClient();
+  const bridges = useAdminBridges(enabled);
 
-	const [editingBridge, setEditingBridge] = useState<AdminBridge | null>(null);
-	const [editingBridgeDetails, setEditingBridgeDetails] =
-		useState<AdminBridge | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editingBridge, setEditingBridge] = useState<AdminBridge | null>(null);
+  const [editingThreshold, setEditingThreshold] = useState<AdminBridge | null>(
+    null,
+  );
 
-	const updateBridge = useMutation(
-		orpc.admin.bridge.update.mutationOptions({
-			onSuccess: () => bridges.refetch(),
-		}),
-	);
-	const upsertThreshold = useMutation(
-		orpc.admin.threshold.upsert.mutationOptions({
-			onSuccess: () => bridges.refetch(),
-		}),
-	);
-	const deleteBridge = useMutation(
-		orpc.admin.bridge.delete.mutationOptions({
-			onSuccess: () => {
-				bridges.refetch();
-				queryClient.invalidateQueries({
-					queryKey: orpc.admin.alertHistory.list.key(),
-				});
-			},
-		}),
-	);
+  const createBridge = useMutation(
+    orpc.admin.bridge.create.mutationOptions({
+      onSuccess: () => bridges.refetch(),
+    }),
+  );
+  const updateBridge = useMutation(
+    orpc.admin.bridge.update.mutationOptions({
+      onSuccess: () => bridges.refetch(),
+    }),
+  );
+  const upsertThreshold = useMutation(
+    orpc.admin.threshold.upsert.mutationOptions({
+      onSuccess: () => bridges.refetch(),
+    }),
+  );
+  const deleteBridge = useMutation(
+    orpc.admin.bridge.delete.mutationOptions({
+      onSuccess: () => {
+        bridges.refetch();
+        queryClient.invalidateQueries({
+          queryKey: orpc.admin.alertHistory.list.key(),
+        });
+      },
+    }),
+  );
 
-	return (
-		<>
-			<BridgesCard
-				bridges={bridges.data ?? []}
-				isLoading={bridges.isLoading}
-				onCreated={() => bridges.refetch()}
-				onEditLocation={setEditingBridgeDetails}
-				onEditThreshold={setEditingBridge}
-				onDelete={(bridge) => deleteBridge.mutate({ id: bridge.id })}
-			/>
+  function handleCreateBridge(values: BridgeFormValues) {
+    createBridge.mutate(
+      {
+        name: values.name.trim(),
+        location: values.location.trim() || undefined,
+        latitude: values.coords?.lat,
+        longitude: values.coords?.lng,
+      },
+      { onSuccess: () => setCreateOpen(false) },
+    );
+  }
 
-			<EditBridgeDialog
-				bridge={editingBridgeDetails}
-				onOpenChange={(open) => !open && setEditingBridgeDetails(null)}
-				isPending={updateBridge.isPending}
-				onSubmit={(values) => {
-					if (!editingBridgeDetails) return;
-					updateBridge.mutate(
-						{
-							id: editingBridgeDetails.id,
-							name: values.name,
-							location: values.location.trim() || undefined,
-							latitude: values.coords?.lat,
-							longitude: values.coords?.lng,
-						},
-						{ onSuccess: () => setEditingBridgeDetails(null) },
-					);
-				}}
-			/>
+  function handleUpdateBridge(values: BridgeFormValues) {
+    if (!editingBridge) return;
+    updateBridge.mutate(
+      {
+        id: editingBridge.id,
+        name: values.name.trim(),
+        location: values.location.trim() || undefined,
+        latitude: values.coords?.lat,
+        longitude: values.coords?.lng,
+      },
+      { onSuccess: () => setEditingBridge(null) },
+    );
+  }
 
-			<EditThresholdDialog
-				bridge={editingBridge}
-				onOpenChange={(open) => !open && setEditingBridge(null)}
-				isPending={upsertThreshold.isPending}
-				onSubmit={(values) => {
-					if (!editingBridge) return;
-					upsertThreshold.mutate(
-						{
-							bridgeId: editingBridge.id,
-							safeMax: values.safeMax,
-							warningMax: values.warningMax,
-						},
-						{ onSuccess: () => setEditingBridge(null) },
-					);
-				}}
-			/>
-		</>
-	);
+  function handleUpdateThreshold(values: {
+    safeMax: number;
+    warningMax: number;
+  }) {
+    if (!editingThreshold) return;
+    upsertThreshold.mutate(
+      {
+        bridgeId: editingThreshold.id,
+        safeMax: values.safeMax,
+        warningMax: values.warningMax,
+      },
+      { onSuccess: () => setEditingThreshold(null) },
+    );
+  }
+
+  function handleDeleteBridge(bridge: AdminBridge) {
+    deleteBridge.mutate({ id: bridge.id });
+  }
+
+  return (
+    <>
+      <BridgesCard
+        bridges={bridges.data ?? []}
+        isLoading={bridges.isLoading}
+        createOpen={createOpen}
+        onCreateOpenChange={setCreateOpen}
+        isCreating={createBridge.isPending}
+        onCreateSubmit={handleCreateBridge}
+        onEditLocation={setEditingBridge}
+        onEditThreshold={setEditingThreshold}
+        onDelete={handleDeleteBridge}
+      />
+
+      <BridgeFormDialog
+        bridge={editingBridge}
+        open={editingBridge !== null}
+        onOpenChange={(open) => !open && setEditingBridge(null)}
+        isPending={updateBridge.isPending}
+        onSubmit={handleUpdateBridge}
+      />
+
+      <EditThresholdDialog
+        bridge={editingThreshold}
+        onOpenChange={(open) => !open && setEditingThreshold(null)}
+        isPending={upsertThreshold.isPending}
+        onSubmit={handleUpdateThreshold}
+      />
+    </>
+  );
 }

@@ -4,39 +4,49 @@ import { Label } from "@flood-bridge-alert/ui/components/label";
 import { useForm } from "@tanstack/react-form";
 import { Loader2 } from "lucide-react";
 
-import { thresholdSchema } from "../schemas";
+import { LocationPicker } from "@/features/bridges/components/location-picker";
+import type { Coords } from "@/features/bridges/types";
+
+import { bridgeDetailsSchema } from "../schemas";
 import type { AdminBridge } from "../types";
 
-type ThresholdFormValues = { safeMax: number; warningMax: number };
+export type BridgeFormValues = {
+  name: string;
+  location: string;
+  coords: Coords | null;
+};
 
-export function EditThresholdForm({
+export function BridgeForm({
   bridge,
   isPending,
   onSubmit,
 }: {
-  bridge: AdminBridge | null;
+  bridge?: AdminBridge | null;
   isPending: boolean;
-  onSubmit: (values: ThresholdFormValues) => void;
+  onSubmit: (values: BridgeFormValues) => void;
 }) {
-  async function handleSubmit({ value }: { value: ThresholdFormValues }) {
+  async function handleSubmit({ value }: { value: BridgeFormValues }) {
     onSubmit(value);
   }
 
   const form = useForm({
     defaultValues: {
-      safeMax: bridge?.threshold?.safeMax ?? 0,
-      warningMax: bridge?.threshold?.warningMax ?? 0,
+      name: bridge?.name ?? "",
+      location: bridge?.location ?? "",
+      coords: (bridge?.latitude != null && bridge?.longitude != null
+        ? { lat: bridge.latitude, lng: bridge.longitude }
+        : null) as Coords | null,
     },
     onSubmit: handleSubmit,
     validators: {
-      onSubmit: thresholdSchema,
+      onSubmit: bridgeDetailsSchema,
     },
   });
 
   return (
     <>
       <form
-        id="edit-threshold-form"
+        id="bridge-form"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -44,20 +54,17 @@ export function EditThresholdForm({
         }}
         className="grid gap-4"
       >
-        <form.Field name="safeMax">
+        <form.Field name="name">
           {(field) => (
             <div className="grid gap-2">
-              <Label htmlFor={field.name}>Ngưỡng an toàn (m)</Label>
+              <Label htmlFor={field.name}>Tên cầu</Label>
               <Input
                 id={field.name}
                 name={field.name}
-                type="number"
-                step="0.01"
-                placeholder="Ví dụ: 1.5"
+                placeholder="Cầu Bến Súc"
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(Number(e.target.value))}
-                required
+                onChange={(e) => field.handleChange(e.target.value)}
               />
               {field.state.meta.errors.map((error) => (
                 <p key={error?.message} className="text-destructive text-sm">
@@ -67,26 +74,29 @@ export function EditThresholdForm({
             </div>
           )}
         </form.Field>
-        <form.Field name="warningMax">
+        <form.Field name="location">
           {(field) => (
             <div className="grid gap-2">
-              <Label htmlFor={field.name}>Ngưỡng cảnh báo (m)</Label>
+              <Label htmlFor={field.name}>Khu vực</Label>
               <Input
                 id={field.name}
                 name={field.name}
-                type="number"
-                step="0.01"
-                placeholder="Ví dụ: 2.5"
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(Number(e.target.value))}
-                required
+                onChange={(e) => field.handleChange(e.target.value)}
+                placeholder="Huyện Củ Chi, TP.HCM"
               />
-              {field.state.meta.errors.map((error) => (
-                <p key={error?.message} className="text-destructive text-sm">
-                  {error?.message}
-                </p>
-              ))}
+            </div>
+          )}
+        </form.Field>
+        <form.Field name="coords">
+          {(field) => (
+            <div className="grid gap-2">
+              <Label>Vị trí trên bản đồ</Label>
+              <LocationPicker
+                value={field.state.value}
+                onChange={field.handleChange}
+              />
             </div>
           )}
         </form.Field>
@@ -102,10 +112,21 @@ export function EditThresholdForm({
           <div className="mt-4 flex justify-end">
             <Button
               type="submit"
-              form="edit-threshold-form"
-              disabled={!canSubmit || isSubmitting || !isDirty || isPending}
+              form="bridge-form"
+              disabled={
+                !canSubmit ||
+                isSubmitting ||
+                isPending ||
+                (bridge != null && !isDirty)
+              }
             >
-              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lưu"}
+              {isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : bridge ? (
+                "Lưu"
+              ) : (
+                "Thêm"
+              )}
             </Button>
           </div>
         )}
