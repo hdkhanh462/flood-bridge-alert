@@ -13,7 +13,12 @@ import {
 } from "react-leaflet";
 import { toast } from "sonner";
 
-import { DEFAULT_MAP_CENTER } from "./bridge-map";
+import {
+	DEFAULT_MAP_CENTER,
+	MapSizeFix,
+	NORTHERN_VIETNAM_BOUNDS,
+	NORTHERN_VIETNAM_MIN_ZOOM,
+} from "./bridge-map";
 
 const pinIcon = L.divIcon({
 	className: "location-picker-pin",
@@ -82,10 +87,14 @@ export function LocationPicker({
 			<div className="overflow-hidden rounded-md border">
 				<MapContainer
 					center={center}
-					zoom={value ? 15 : 6}
+					zoom={value ? 15 : NORTHERN_VIETNAM_MIN_ZOOM}
+					minZoom={NORTHERN_VIETNAM_MIN_ZOOM}
+					maxBounds={NORTHERN_VIETNAM_BOUNDS}
+					maxBoundsViscosity={1.0}
 					className="isolate z-0"
 					style={{ height: 240, width: "100%" }}
 				>
+					<MapSizeFix />
 					<TileLayer
 						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 						url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
