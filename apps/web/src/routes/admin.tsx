@@ -237,11 +237,20 @@ export default function Admin() {
 									>
 										<div className="grid gap-2">
 											<Label htmlFor="name">Tên cầu</Label>
-											<Input id="name" name="name" required />
+											<Input
+												id="name"
+												name="name"
+												placeholder="Cầu Bến Súc"
+												required
+											/>
 										</div>
 										<div className="grid gap-2">
 											<Label htmlFor="location">Khu vực</Label>
-											<Input id="location" name="location" />
+											<Input
+												id="location"
+												name="location"
+												placeholder="Huyện Củ Chi, TP.HCM"
+											/>
 										</div>
 									</form>
 									<DialogFooter>
@@ -539,6 +548,7 @@ export default function Admin() {
 								name="safeMax"
 								type="number"
 								step="0.01"
+								placeholder="Ví dụ: 1.5"
 								defaultValue={editingBridge?.threshold?.safeMax}
 								required
 							/>
@@ -550,6 +560,7 @@ export default function Admin() {
 								name="warningMax"
 								type="number"
 								step="0.01"
+								placeholder="Ví dụ: 2.5"
 								defaultValue={editingBridge?.threshold?.warningMax}
 								required
 							/>

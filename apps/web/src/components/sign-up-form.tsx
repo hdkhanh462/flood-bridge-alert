@@ -63,7 +63,9 @@ export default function SignUpForm() {
 		<Card className="mx-auto mt-10 w-full max-w-md">
 			<CardHeader>
 				<CardTitle>Tạo tài khoản</CardTitle>
-				<CardDescription>Tạo tài khoản quản trị viên mới</CardDescription>
+				<CardDescription>
+					Đăng ký để nhận cảnh báo và quản lý thông tin cá nhân
+				</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -82,6 +84,7 @@ export default function SignUpForm() {
 								<Input
 									id={field.name}
 									name={field.name}
+									placeholder="Nguyễn Văn A"
 									autoComplete="name"
 									value={field.state.value}
 									onBlur={field.handleBlur}
@@ -104,6 +107,7 @@ export default function SignUpForm() {
 									id={field.name}
 									name={field.name}
 									type="email"
+									placeholder="you@example.com"
 									autoComplete="email"
 									value={field.state.value}
 									onBlur={field.handleBlur}
@@ -126,6 +130,7 @@ export default function SignUpForm() {
 									id={field.name}
 									name={field.name}
 									type="password"
+									placeholder="Tối thiểu 8 ký tự"
 									autoComplete="new-password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
@@ -159,13 +164,15 @@ export default function SignUpForm() {
 						</Button>
 					)}
 				</form.Subscribe>
-				<Button
-					variant="link"
-					nativeButton={false}
-					render={<Link to="/login" />}
-				>
-					Đã có tài khoản? Đăng nhập
-				</Button>
+				<p className="text-muted-foreground text-sm">
+					Đã có tài khoản?{" "}
+					<Link
+						to="/login"
+						className="font-medium text-primary underline-offset-4 hover:underline"
+					>
+						Đăng nhập
+					</Link>
+				</p>
 			</CardFooter>
 		</Card>
 	);

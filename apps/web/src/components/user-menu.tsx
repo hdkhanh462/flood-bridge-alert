@@ -13,7 +13,7 @@ import {
 	DropdownMenuTrigger,
 } from "@flood-bridge-alert/ui/components/dropdown-menu";
 import { Skeleton } from "@flood-bridge-alert/ui/components/skeleton";
-import { UserCog } from "lucide-react";
+import { ShieldUser, UserCog } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 
 import { authClient } from "@/lib/auth-client";
@@ -72,6 +72,15 @@ export default function UserMenu() {
 							Quản lý tài khoản
 						</DropdownMenuItem>
 					)}
+					{session.user.role === "admin" ? (
+						<DropdownMenuItem
+							nativeButton={false}
+							render={<Link to="/admin" />}
+						>
+							<ShieldUser className="h-4 w-4" />
+							Trang quản trị
+						</DropdownMenuItem>
+					) : null}
 					<DropdownMenuItem
 						variant="destructive"
 						onClick={() => {

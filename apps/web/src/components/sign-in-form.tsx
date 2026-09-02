@@ -10,6 +10,7 @@ import {
 import { Input } from "@flood-bridge-alert/ui/components/input";
 import { Label } from "@flood-bridge-alert/ui/components/label";
 import { useForm } from "@tanstack/react-form";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
@@ -20,7 +21,18 @@ import Loader from "./loader";
 
 export default function SignInForm() {
 	const navigate = useNavigate();
-	const { isPending } = authClient.useSession();
+	const { data: session, isPending } = authClient.useSession();
+
+	const isAnonymous = (session?.user as { isAnonymous?: boolean } | undefined)
+		?.isAnonymous;
+
+	useEffect(() => {
+		if (!isPending && session && !isAnonymous) {
+			navigate(session.user.role === "admin" ? "/admin" : "/", {
+				replace: true,
+			});
+		}
+	}, [session, isAnonymous, isPending, navigate]);
 
 	const form = useForm({
 		defaultValues: {
@@ -34,9 +46,8 @@ export default function SignInForm() {
 					password: value.password,
 				},
 				{
-					onSuccess: async () => {
-						const { data: session } = await authClient.getSession();
-						navigate(session?.user.role === "admin" ? "/admin" : "/");
+					onSuccess: (ctx) => {
+						navigate(ctx.data.user.role === "admin" ? "/admin" : "/");
 						toast.success("Đăng nhập thành công");
 					},
 					onError: (error) => {
@@ -83,6 +94,7 @@ export default function SignInForm() {
 									id={field.name}
 									name={field.name}
 									type="email"
+									placeholder="you@example.com"
 									autoComplete="email"
 									value={field.state.value}
 									onBlur={field.handleBlur}
@@ -105,6 +117,7 @@ export default function SignInForm() {
 									id={field.name}
 									name={field.name}
 									type="password"
+									placeholder="Nhập mật khẩu"
 									autoComplete="current-password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
@@ -138,13 +151,15 @@ export default function SignInForm() {
 						</Button>
 					)}
 				</form.Subscribe>
-				<Button
-					variant="link"
-					nativeButton={false}
-					render={<Link to="/register" />}
-				>
-					Chưa có tài khoản? Đăng ký
-				</Button>
+				<p className="text-muted-foreground text-sm">
+					Chưa có tài khoản?{" "}
+					<Link
+						to="/register"
+						className="font-medium text-primary underline-offset-4 hover:underline"
+					>
+						Đăng ký
+					</Link>
+				</p>
 			</CardFooter>
 		</Card>
 	);

@@ -60,6 +60,7 @@ function ProfileForm({ name }: { name: string }) {
 								<Input
 									id={field.name}
 									name={field.name}
+									placeholder="Nguyễn Văn A"
 									autoComplete="name"
 									value={field.state.value}
 									onBlur={field.handleBlur}
@@ -141,6 +142,7 @@ function EmailForm({ email }: { email: string }) {
 									id={field.name}
 									name={field.name}
 									type="email"
+									placeholder="you@example.com"
 									autoComplete="email"
 									value={field.state.value}
 									onBlur={field.handleBlur}
@@ -226,6 +228,7 @@ function PasswordForm() {
 									id={field.name}
 									name={field.name}
 									type="password"
+									placeholder="Nhập mật khẩu hiện tại"
 									autoComplete="current-password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
@@ -248,6 +251,7 @@ function PasswordForm() {
 									id={field.name}
 									name={field.name}
 									type="password"
+									placeholder="Tối thiểu 8 ký tự"
 									autoComplete="new-password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
