@@ -1,7 +1,9 @@
-import SignUpForm from "@/components/sign-up-form";
-import { useDocumentTitle } from "@/hooks/use-document-title";
+import { RegisterView } from "@/features/auth/components/register-view";
 
-export default function Register() {
-	useDocumentTitle("Đăng ký");
-	return <SignUpForm />;
+export  function RegisterPage() {
+  return (
+    <div className="w-full max-w-md">
+      <RegisterView />
+    </div>
+  );
 }
