@@ -31,9 +31,11 @@ export const todoRouter = {
       });
     }),
 
-  delete: publicProcedure.input(z.object({ id: z.number() })).handler(async ({ input }) => {
-    return await prisma.todo.delete({
-      where: { id: input.id },
-    });
-  }),
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .handler(async ({ input }) => {
+      return await prisma.todo.delete({
+        where: { id: input.id },
+      });
+    }),
 };
