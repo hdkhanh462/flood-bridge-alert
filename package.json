@@ -18,7 +18,7 @@
 		"db:migrate": "turbo run db:migrate -F @flood-bridge-alert/db --",
 		"seed:admin": "turbo run seed:admin -F server --",
 		"check": "biome check --write .",
-		"secrets:generate": "bash scripts/generate-secrets.sh",
+		"secrets:generate": "node scripts/generate-secrets.mjs",
 		"blynk:simulate": "bash scripts/simulate-blynk.sh",
 		"docker:dev:up": "docker compose --env-file infra/env/.env.dev -f infra/docker/docker-compose.local.yml up -d",
 		"docker:dev:down": "docker compose --env-file infra/env/.env.dev -f infra/docker/docker-compose.local.yml down"
