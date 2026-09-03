@@ -48,31 +48,33 @@ function DialogContent({
 	return (
 		<DialogPortal>
 			<DialogOverlay />
-			<DialogPrimitive.Popup
-				data-slot="dialog-content"
-				className={cn(
-					"data-open:fade-in-0 data-open:zoom-in-95 data-closed:fade-out-0 data-closed:zoom-out-95 fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-xl bg-popover p-6 text-popover-foreground text-sm outline-none ring-1 ring-foreground/10 duration-100 data-closed:animate-out data-open:animate-in sm:max-w-md",
-					className,
-				)}
-				{...props}
-			>
-				{children}
-				{showCloseButton && (
-					<DialogPrimitive.Close
-						data-slot="dialog-close"
-						render={
-							<Button
-								variant="ghost"
-								className="absolute top-4 right-4"
-								size="icon-sm"
-							/>
-						}
-					>
-						<XIcon />
-						<span className="sr-only">Close</span>
-					</DialogPrimitive.Close>
-				)}
-			</DialogPrimitive.Popup>
+			<div className="fixed inset-0 z-50 grid place-items-center p-4">
+				<DialogPrimitive.Popup
+					data-slot="dialog-content"
+					className={cn(
+						"data-open:fade-in-0 data-open:zoom-in-95 data-closed:fade-out-0 data-closed:zoom-out-95 grid max-h-full w-full max-w-full gap-6 overflow-y-auto rounded-xl bg-popover p-6 text-popover-foreground text-sm outline-none ring-1 ring-foreground/10 duration-100 data-closed:animate-out data-open:animate-in sm:max-w-md",
+						className,
+					)}
+					{...props}
+				>
+					{children}
+					{showCloseButton && (
+						<DialogPrimitive.Close
+							data-slot="dialog-close"
+							render={
+								<Button
+									variant="ghost"
+									className="absolute top-4 right-4"
+									size="icon-sm"
+								/>
+							}
+						>
+							<XIcon />
+							<span className="sr-only">Close</span>
+						</DialogPrimitive.Close>
+					)}
+				</DialogPrimitive.Popup>
+			</div>
 		</DialogPortal>
 	);
 }
