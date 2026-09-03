@@ -12,10 +12,10 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-if [ -f "$script_dir/.env" ]; then
+if [ -f "$script_dir/infra/env/.env.dev" ]; then
 	set -a
 	# shellcheck source=/dev/null
-	source "$script_dir/.env"
+	source "$script_dir/infra/env/.env.dev"
 	set +a
 fi
 
