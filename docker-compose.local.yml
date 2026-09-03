@@ -5,10 +5,10 @@ services:
       dockerfile: apps/server/Dockerfile
       target: production
     ports:
-      - "${SERVER_PORT:-3000}:3000"
+      - "${SERVER_PORT:-8000}:8000"
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=8000
       - DATABASE_URL=${DATABASE_URL}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
@@ -30,7 +30,7 @@ services:
         VITE_SERVER_URL: ${VITE_SERVER_URL}
         VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY}
     ports:
-      - "${WEB_PORT:-8080}:80"
+      - "${WEB_PORT:-3000}:3000"
     restart: unless-stopped
     depends_on:
       - server

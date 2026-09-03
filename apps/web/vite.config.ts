@@ -6,6 +6,9 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  server: {
+    port: 3000,
+  },
   plugins: [
     tailwindcss(),
     VitePWA({

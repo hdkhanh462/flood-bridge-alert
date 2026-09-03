@@ -8,7 +8,7 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: z.string().min(32),
     BETTER_AUTH_URL: z.url(),
     CORS_ORIGIN: z.url(),
-    PORT: z.coerce.number().default(3000),
+    PORT: z.coerce.number().default(8000),
     BLYNK_WEBHOOK_TOKEN: z.string().min(1),
     VAPID_PUBLIC_KEY: z.string().min(1),
     VAPID_PRIVATE_KEY: z.string().min(1),

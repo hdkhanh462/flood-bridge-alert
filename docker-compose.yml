@@ -17,7 +17,7 @@ services:
     image: ghcr.io/hdkhanh462/flood-bridge-alert-server:${IMAGE_TAG:-latest}
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=8000
       - DATABASE_URL=${DATABASE_URL}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
