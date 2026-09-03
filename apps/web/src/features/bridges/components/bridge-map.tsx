@@ -92,7 +92,7 @@ export function BridgeMap({
                 </p>
               ) : null}
               {marker.latestReading ? (
-                <p className="text-sm">
+                <p className="text-sm m-0!">
                   Mực nước:{" "}
                   <span className="font-medium">
                     {marker.latestReading.level} m
