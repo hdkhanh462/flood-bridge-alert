@@ -60,13 +60,16 @@ export const bridgeRouter = {
   nearby: publicProcedure
     .input(z.object({ lat: z.number(), lng: z.number() }))
     .handler(async ({ input }) => {
-      const bridges = await prisma.bridge.findMany({
-        where: { latitude: { not: null }, longitude: { not: null } },
-        include: {
-          readings: { orderBy: { recordedAt: "desc" }, take: 1 },
-        },
-      });
-      return bridges
+      const [bridges, total] = await Promise.all([
+        prisma.bridge.findMany({
+          where: { latitude: { not: null }, longitude: { not: null } },
+          include: {
+            readings: { orderBy: { recordedAt: "desc" }, take: 1 },
+          },
+        }),
+        prisma.bridge.count(),
+      ]);
+      const items = bridges
         .map((bridge) => ({
           ...toBridgeSummary(bridge),
           distanceKm: distanceKm(
@@ -78,6 +81,39 @@ export const bridgeRouter = {
         }))
         .filter((bridge) => bridge.distanceKm <= NEARBY_RADIUS_KM)
         .sort((a, b) => a.distanceKm - b.distanceKm);
+      // total = tổng số cầu trong hệ thống (không lọc theo bán kính), giúp UI
+      // phân biệt "hệ thống chưa có cầu nào" với "không có cầu nào gần bạn".
+      return { items, total };
+    }),
+
+  search: publicProcedure
+    .input(
+      z.object({
+        query: z.string().trim().max(200).optional(),
+        limit: z.number().int().min(1).max(50).default(10),
+        offset: z.number().int().min(0).default(0),
+      }),
+    )
+    .handler(async ({ input }) => {
+      const where = input.query
+        ? { name: { contains: input.query, mode: "insensitive" as const } }
+        : {};
+      const [bridges, total] = await Promise.all([
+        prisma.bridge.findMany({
+          where,
+          orderBy: { name: "asc" },
+          skip: input.offset,
+          take: input.limit,
+          include: {
+            readings: { orderBy: { recordedAt: "desc" }, take: 1 },
+          },
+        }),
+        prisma.bridge.count({ where }),
+      ]);
+      return {
+        items: bridges.map(toBridgeSummary),
+        hasMore: input.offset + bridges.length < total,
+      };
     }),
 
   getById: publicProcedure

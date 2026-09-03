@@ -25,6 +25,7 @@ import { NEARBY_RADIUS_KM } from "../constants";
 import { useGeolocation } from "../hooks/use-geolocation";
 import { BridgeCard } from "./bridge-card";
 import { BridgeMap } from "./bridge-map";
+import { BridgeSearchList } from "./bridge-search-list";
 
 export function BridgesListView() {
   useDocumentTitle("Trạng thái cầu tràn");
@@ -42,7 +43,7 @@ export function BridgesListView() {
   });
 
   const locatedBridges =
-    bridges.data?.filter(
+    bridges.data?.items.filter(
       (bridge) => bridge.latitude != null && bridge.longitude != null,
     ) ?? [];
 
@@ -68,41 +69,56 @@ export function BridgesListView() {
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-      ) : location.status === "unsupported" ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <LocateFixed />
-            </EmptyMedia>
-            <EmptyTitle>Trình duyệt không hỗ trợ định vị</EmptyTitle>
-            <EmptyDescription>
-              Vui lòng dùng trình duyệt khác để xem các cầu tràn gần bạn.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : location.status === "denied" ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <LocateFixed />
-            </EmptyMedia>
-            <EmptyTitle>Chưa thể lấy vị trí của bạn</EmptyTitle>
-            <EmptyDescription>
-              Hãy cấp quyền truy cập vị trí để xem các cầu tràn trong bán kính{" "}
-              {NEARBY_RADIUS_KM}km quanh bạn.
-            </EmptyDescription>
-          </EmptyHeader>
-          <Button onClick={requestLocation}>
-            <LocateFixed className="h-4 w-4" />
-            Thử lại
-          </Button>
-        </Empty>
+      ) : location.status === "unsupported" || location.status === "denied" ? (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-muted/50 px-4 py-3">
+            <p className="text-muted-foreground text-sm">
+              {location.status === "unsupported"
+                ? "Trình duyệt không hỗ trợ định vị nên không thể lọc cầu tràn gần bạn."
+                : "Chưa thể lấy vị trí của bạn nên không thể lọc cầu tràn gần bạn."}
+            </p>
+            {location.status === "denied" ? (
+              <Button variant="outline" size="sm" onClick={requestLocation}>
+                <LocateFixed className="h-4 w-4" />
+                Thử lại
+              </Button>
+            ) : null}
+          </div>
+          <BridgeSearchList />
+        </div>
       ) : bridges.isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2">
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-32 w-full" />
         </div>
-      ) : bridges.data?.length === 0 ? (
+      ) : bridges.isError ? (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Waves />
+            </EmptyMedia>
+            <EmptyTitle>Không thể tải danh sách cầu tràn</EmptyTitle>
+            <EmptyDescription>
+              Đã có lỗi khi kết nối máy chủ. Vui lòng thử lại.
+            </EmptyDescription>
+          </EmptyHeader>
+          <Button variant="outline" onClick={() => bridges.refetch()}>
+            Thử lại
+          </Button>
+        </Empty>
+      ) : bridges.data?.total === 0 ? (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Waves />
+            </EmptyMedia>
+            <EmptyTitle>Chưa có cầu tràn nào</EmptyTitle>
+            <EmptyDescription>
+              Quản trị viên chưa thêm cầu tràn nào vào hệ thống.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : bridges.data?.items.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -124,7 +140,7 @@ export function BridgesListView() {
 
           <TabsContent value="grid">
             <div className="grid gap-4 sm:grid-cols-2">
-              {bridges.data?.map((bridge) => (
+              {bridges.data?.items.map((bridge) => (
                 <BridgeCard key={bridge.id} bridge={bridge} />
               ))}
             </div>

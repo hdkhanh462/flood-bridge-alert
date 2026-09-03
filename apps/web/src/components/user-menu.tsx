@@ -26,7 +26,7 @@ export default function UserMenu() {
     return <Skeleton className="h-9 w-9 rounded-full" />;
   }
 
-  if (!session) {
+  if (!session?.user) {
     return (
       <Button
         variant="outline"
