@@ -60,6 +60,8 @@ export function BridgeDetailView() {
                 id: bridge.data.id,
                 name: bridge.data.name,
                 status: bridge.data.latestReading?.status,
+                location: bridge.data.location,
+                latestReading: bridge.data.latestReading,
                 latitude: bridge.data.latitude,
                 longitude: bridge.data.longitude,
               }}

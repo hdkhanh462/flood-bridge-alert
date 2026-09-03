@@ -233,9 +233,9 @@ export function WaterLevelChart({
 
       {hovered ? (
         <div
-          className="pointer-events-none absolute rounded border bg-popover px-2 py-1 text-popover-foreground text-xs shadow-sm"
+          className="pointer-events-none absolute whitespace-nowrap rounded border bg-popover px-2 py-1 text-popover-foreground text-xs shadow-sm"
           style={{
-            left: `${(hovered.x / WIDTH) * 100}%`,
+            left: `${Math.min(Math.max((hovered.x / WIDTH) * 100, 12), 88)}%`,
             top: `${(hovered.y / HEIGHT) * 100}%`,
             transform: "translate(-50%, -130%)",
           }}

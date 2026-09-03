@@ -8,6 +8,7 @@ import {
 import { Link } from "react-router";
 
 import { StatusBadge } from "./status-badge";
+import { formatReadingTime } from "../utils";
 
 export function BridgeCard({
   bridge,
@@ -51,12 +52,11 @@ export function BridgeCard({
       <CardContent>
         {bridge.latestReading ? (
           <p className="text-muted-foreground text-sm">
-            Mực nước hiện tại:{" "}
+            Mực nước:{" "}
             <span className="font-medium text-foreground">
               {bridge.latestReading.level} m
             </span>{" "}
-            · Cập nhật lúc{" "}
-            {new Date(bridge.latestReading.recordedAt).toLocaleString("vi-VN")}
+            · {formatReadingTime(bridge.latestReading.recordedAt)}
           </p>
         ) : (
           <p className="text-muted-foreground text-sm">

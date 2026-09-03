@@ -153,6 +153,8 @@ export function BridgesListView() {
                   id: bridge.id,
                   name: bridge.name,
                   status: bridge.latestReading?.status,
+                  location: bridge.location,
+                  latestReading: bridge.latestReading,
                   latitude: bridge.latitude as number,
                   longitude: bridge.longitude as number,
                 }))}
