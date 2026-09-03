@@ -17,6 +17,7 @@ model Bridge {
   readings          WaterLevelReading[]
   alerts            AlertHistory[]
   pushSubscriptions PushSubscription[]
+  mutes             PushSubscriptionMute[]
 
   @@map("bridge")
 }
@@ -65,7 +66,23 @@ model PushSubscription {
   auth      String
   createdAt DateTime @default(now())
   bridges   Bridge[]
+  mutes     PushSubscriptionMute[]
 
   @@index([userId])
   @@map("push_subscription")
+}
+
+// Tạm tắt cảnh báo push cho 1 cầu cụ thể trong 1 khoảng thời gian, tránh
+// spam khi mực nước dao động quanh ngưỡng. Độc lập với danh sách "bridges"
+// (cầu đang theo dõi) — có thể mute 1 cầu ngay cả khi đang theo dõi tất cả.
+model PushSubscriptionMute {
+  id                 String           @id @default(cuid())
+  pushSubscriptionId String
+  pushSubscription   PushSubscription @relation(fields: [pushSubscriptionId], references: [id], onDelete: Cascade)
+  bridgeId           String
+  bridge             Bridge           @relation(fields: [bridgeId], references: [id], onDelete: Cascade)
+  mutedUntil         DateTime
+
+  @@unique([pushSubscriptionId, bridgeId])
+  @@map("push_subscription_mute")
 }

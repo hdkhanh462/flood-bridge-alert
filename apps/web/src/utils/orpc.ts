@@ -4,8 +4,7 @@ import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryCache, QueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { QueryClient } from "@tanstack/react-query";
 
 const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
@@ -13,21 +12,10 @@ export function createQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
+        retry: 1,
         gcTime: ONE_DAY_MS,
       },
     },
-    queryCache: new QueryCache({
-      onError: (error, query) => {
-        toast.error(`Error: ${error.message}`, {
-          action: {
-            label: "retry",
-            onClick: () => {
-              query.invalidate();
-            },
-          },
-        });
-      },
-    }),
   });
 }
 

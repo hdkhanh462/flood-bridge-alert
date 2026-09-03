@@ -80,4 +80,71 @@ export const pushSubscriptionRouter = {
       });
       return { success: true };
     }),
+
+  // Danh sách cầu đang bị tạm tắt thông báo (còn hiệu lực) cho subscription này.
+  myMutes: protectedProcedure
+    .input(z.object({ endpoint: z.string().min(1) }))
+    .handler(async ({ input, context }) => {
+      await assertOwnedByCaller(input.endpoint, context.session.user.id);
+      const subscription = await prisma.pushSubscription.findUnique({
+        where: { endpoint: input.endpoint },
+        include: { mutes: { where: { mutedUntil: { gt: new Date() } } } },
+      });
+      return {
+        mutes:
+          subscription?.mutes.map((mute) => ({
+            bridgeId: mute.bridgeId,
+            mutedUntil: mute.mutedUntil,
+          })) ?? [],
+      };
+    }),
+
+  muteBridge: protectedProcedure
+    .input(
+      z.object({
+        endpoint: z.string().min(1),
+        bridgeId: z.string().min(1),
+        hours: z.number().int().min(1).max(24),
+      }),
+    )
+    .handler(async ({ input, context }) => {
+      await assertOwnedByCaller(input.endpoint, context.session.user.id);
+      const subscription = await prisma.pushSubscription.findUniqueOrThrow({
+        where: { endpoint: input.endpoint },
+      });
+      const mutedUntil = new Date(Date.now() + input.hours * 60 * 60 * 1000);
+      await prisma.pushSubscriptionMute.upsert({
+        where: {
+          pushSubscriptionId_bridgeId: {
+            pushSubscriptionId: subscription.id,
+            bridgeId: input.bridgeId,
+          },
+        },
+        create: {
+          pushSubscriptionId: subscription.id,
+          bridgeId: input.bridgeId,
+          mutedUntil,
+        },
+        update: { mutedUntil },
+      });
+      return { success: true, mutedUntil };
+    }),
+
+  unmuteBridge: protectedProcedure
+    .input(
+      z.object({ endpoint: z.string().min(1), bridgeId: z.string().min(1) }),
+    )
+    .handler(async ({ input, context }) => {
+      await assertOwnedByCaller(input.endpoint, context.session.user.id);
+      const subscription = await prisma.pushSubscription.findUniqueOrThrow({
+        where: { endpoint: input.endpoint },
+      });
+      await prisma.pushSubscriptionMute.deleteMany({
+        where: {
+          pushSubscriptionId: subscription.id,
+          bridgeId: input.bridgeId,
+        },
+      });
+      return { success: true };
+    }),
 };

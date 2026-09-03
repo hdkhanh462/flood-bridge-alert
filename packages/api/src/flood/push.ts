@@ -15,12 +15,18 @@ export async function sendAlertPush(
   alert: AlertHistory,
 ): Promise<void> {
   // Subscription không chọn cầu nào (bridges rỗng) nghĩa là muốn nhận cảnh báo của TẤT CẢ các cầu.
+  // Loại các subscription đang tạm tắt (mute) cầu này, kể cả khi đang theo dõi tất cả.
   const subscriptions = await prisma.pushSubscription.findMany({
     where: {
       OR: [
         { bridges: { none: {} } },
         { bridges: { some: { id: alert.bridgeId } } },
       ],
+      NOT: {
+        mutes: {
+          some: { bridgeId: alert.bridgeId, mutedUntil: { gt: new Date() } },
+        },
+      },
     },
   });
   if (subscriptions.length === 0) return;
