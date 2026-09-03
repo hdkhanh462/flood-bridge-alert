@@ -15,11 +15,13 @@ ENV DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=server
 
-# ---- production: ships the built workspace as-is (pnpm workspace node_modules
-# relies on symlinks into sibling packages, so the monorepo layout is kept) ----
-FROM base AS production
+# ---- production: tsdown (see tsdown.config.ts `deps.alwaysBundle`) bundles
+# the server plus every workspace/npm dependency it uses straight into
+# dist/*.mjs, so the runtime needs nothing else from the monorepo — no
+# node_modules, no source, no other app's dependency tree.
+FROM node:22-alpine AS production
 ENV NODE_ENV=production
-COPY --from=build /app /app
-WORKDIR /app/apps/server
+WORKDIR /app
+COPY --from=build /app/apps/server/dist ./dist
 EXPOSE 3000
 CMD ["node", "dist/index.mjs"]

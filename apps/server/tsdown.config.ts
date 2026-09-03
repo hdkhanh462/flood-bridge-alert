@@ -6,6 +6,6 @@ export default defineConfig({
   outDir: "./dist",
   clean: true,
   deps: {
-    alwaysBundle: [/@flood-bridge-alert\/.*/],
+    alwaysBundle: [/.*/],
   },
 });
