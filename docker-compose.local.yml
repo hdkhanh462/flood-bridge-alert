@@ -1,4 +1,21 @@
 services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=flood-bridge-alert
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   server:
     build:
       context: .
@@ -9,7 +26,10 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8000
-      - DATABASE_URL=${DATABASE_URL}
+      # Trong network của compose, server phải trỏ tới service "postgres", còn
+      # `.env.dev` (dùng cho `pnpm dev` chạy trên host) trỏ "localhost" vì
+      # postgres đã publish port ra host — cùng 1 DB, khác hostname theo góc nhìn.
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/flood-bridge-alert
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - CORS_ORIGIN=${CORS_ORIGIN}
@@ -20,6 +40,9 @@ services:
       - SUPERADMIN_EMAIL=${SUPERADMIN_EMAIL}
       - SUPERADMIN_PASSWORD=${SUPERADMIN_PASSWORD}
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   web:
     build:
@@ -34,3 +57,6 @@ services:
     restart: unless-stopped
     depends_on:
       - server
+
+volumes:
+  postgres_data:
