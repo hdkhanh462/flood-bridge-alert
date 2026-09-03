@@ -34,12 +34,14 @@ export function UsersCard({
   users,
   isLoading,
   isMutating,
+  currentUserId,
   onToggleRole,
   onToggleBan,
 }: {
   users: AdminUser[];
   isLoading: boolean;
   isMutating: boolean;
+  currentUserId?: string;
   onToggleRole: (user: AdminUser) => void;
   onToggleBan: (user: AdminUser) => void;
 }) {
@@ -72,96 +74,130 @@ export function UsersCard({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        <div className="font-medium">
-                          {user.isAnonymous
-                            ? "Người dùng ẩn danh"
-                            : user.email}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant={
-                              user.role === "admin" ? "default" : "secondary"
+                  {users.map((user) => {
+                    const isSelf = user.id === currentUserId;
+                    return (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div className="font-medium">
+                            {user.isAnonymous
+                              ? "Người dùng ẩn danh"
+                              : user.email}
+                            {isSelf ? (
+                              <span className="text-muted-foreground">
+                                {" "}
+                                (Bạn)
+                              </span>
+                            ) : null}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              variant={
+                                user.role === "admin" ? "default" : "secondary"
+                              }
+                            >
+                              {user.role === "admin" ? "Admin" : "Người dùng"}
+                            </Badge>
+                            {user.banned ? (
+                              <Badge variant="destructive">Đã khóa</Badge>
+                            ) : null}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="xs"
+                            disabled={isMutating || isSelf}
+                            title={
+                              isSelf
+                                ? "Không thể tự thay đổi vai trò của chính mình"
+                                : undefined
                             }
+                            onClick={() => onToggleRole(user)}
                           >
-                            {user.role === "admin" ? "Admin" : "Người dùng"}
-                          </Badge>
-                          {user.banned ? (
-                            <Badge variant="destructive">Đã khóa</Badge>
-                          ) : null}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="xs"
-                          disabled={isMutating}
-                          onClick={() => onToggleRole(user)}
-                        >
-                          {user.role === "admin"
-                            ? "Bỏ quyền admin"
-                            : "Cấp quyền admin"}
-                        </Button>{" "}
-                        <Button
-                          variant="outline"
-                          size="xs"
-                          disabled={isMutating}
-                          onClick={() => onToggleBan(user)}
-                        >
-                          {user.banned ? "Mở khóa" : "Khóa"}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                            {user.role === "admin"
+                              ? "Bỏ quyền admin"
+                              : "Cấp quyền admin"}
+                          </Button>{" "}
+                          <Button
+                            variant="outline"
+                            size="xs"
+                            disabled={isMutating || isSelf}
+                            title={
+                              isSelf
+                                ? "Không thể tự khóa chính mình"
+                                : undefined
+                            }
+                            onClick={() => onToggleBan(user)}
+                          >
+                            {user.banned ? "Mở khóa" : "Khóa"}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
             <div className="grid gap-3 md:hidden">
-              {users.map((user) => (
-                <div key={user.id} className="rounded-md border p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium">
-                      {user.isAnonymous ? "Người dùng ẩn danh" : user.email}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant={
-                          user.role === "admin" ? "default" : "secondary"
+              {users.map((user) => {
+                const isSelf = user.id === currentUserId;
+                return (
+                  <div key={user.id} className="rounded-md border p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium">
+                        {user.isAnonymous ? "Người dùng ẩn danh" : user.email}
+                        {isSelf ? (
+                          <span className="text-muted-foreground">
+                            {" "}
+                            (Bạn)
+                          </span>
+                        ) : null}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={
+                            user.role === "admin" ? "default" : "secondary"
+                          }
+                        >
+                          {user.role === "admin" ? "Admin" : "Người dùng"}
+                        </Badge>
+                        {user.banned ? (
+                          <Badge variant="destructive">Đã khóa</Badge>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div className="mt-2 flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        disabled={isMutating || isSelf}
+                        title={
+                          isSelf
+                            ? "Không thể tự thay đổi vai trò của chính mình"
+                            : undefined
                         }
+                        onClick={() => onToggleRole(user)}
                       >
-                        {user.role === "admin" ? "Admin" : "Người dùng"}
-                      </Badge>
-                      {user.banned ? (
-                        <Badge variant="destructive">Đã khóa</Badge>
-                      ) : null}
+                        {user.role === "admin"
+                          ? "Bỏ quyền admin"
+                          : "Cấp quyền admin"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        disabled={isMutating || isSelf}
+                        title={isSelf ? "Không thể tự khóa chính mình" : undefined}
+                        onClick={() => onToggleBan(user)}
+                      >
+                        {user.banned ? "Mở khóa" : "Khóa"}
+                      </Button>
                     </div>
                   </div>
-                  <div className="mt-2 flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      disabled={isMutating}
-                      onClick={() => onToggleRole(user)}
-                    >
-                      {user.role === "admin"
-                        ? "Bỏ quyền admin"
-                        : "Cấp quyền admin"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      disabled={isMutating}
-                      onClick={() => onToggleBan(user)}
-                    >
-                      {user.banned ? "Mở khóa" : "Khóa"}
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         )}
