@@ -1,7 +1,7 @@
 app.hoangduongkhanh.id.vn {
-	reverse_proxy web:80
+	reverse_proxy web:3000
 }
 
 api.hoangduongkhanh.id.vn {
-	reverse_proxy server:3000
+	reverse_proxy server:8000
 }

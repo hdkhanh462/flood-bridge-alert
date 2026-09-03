@@ -17,7 +17,11 @@
 		"db:generate": "turbo run db:generate -F @flood-bridge-alert/db --",
 		"db:migrate": "turbo run db:migrate -F @flood-bridge-alert/db --",
 		"seed:admin": "turbo run seed:admin -F server --",
-		"check": "biome check --write ."
+		"check": "biome check --write .",
+		"secrets:generate": "node scripts/generate-secrets.mjs",
+		"blynk:simulate": "bash scripts/simulate-blynk.sh",
+		"docker:dev:up": "docker compose --env-file infra/env/.env.dev -f infra/docker/docker-compose.local.yml up -d",
+		"docker:dev:down": "docker compose --env-file infra/env/.env.dev -f infra/docker/docker-compose.local.yml down"
 	},
 	"dependencies": {
 		"@flood-bridge-alert/env": "workspace:*",

@@ -31,7 +31,7 @@ pnpm install
 This project uses PostgreSQL with Prisma.
 
 1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
+2. Update your `apps/server/.env.dev` file with your PostgreSQL connection details.
 
 3. Apply the schema to your database:
 
@@ -45,8 +45,8 @@ Then, run the development server:
 pnpm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the web application.
+The API is running at [http://localhost:8000](http://localhost:8000).
 
 ## UI Customization
 

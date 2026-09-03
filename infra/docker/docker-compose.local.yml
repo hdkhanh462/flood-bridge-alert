@@ -1,0 +1,64 @@
+name: flood-bridge-alert
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=flood-bridge-alert
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  server:
+    build:
+      context: ../..
+      dockerfile: apps/server/Dockerfile
+      target: production
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      # Trong network của compose, server phải trỏ tới service "postgres", còn
+      # `.env.dev` (dùng cho `pnpm dev` chạy trên host) trỏ "localhost" vì
+      # postgres đã publish port ra host — cùng 1 DB, khác hostname theo góc nhìn.
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/flood-bridge-alert
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - BLYNK_WEBHOOK_TOKEN=${BLYNK_WEBHOOK_TOKEN}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_SUBJECT=${VAPID_SUBJECT}
+      - SUPERADMIN_EMAIL=${SUPERADMIN_EMAIL}
+      - SUPERADMIN_PASSWORD=${SUPERADMIN_PASSWORD}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+      target: production
+      args:
+        VITE_SERVER_URL: ${VITE_SERVER_URL}
+        VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY}
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    restart: unless-stopped
+    depends_on:
+      - server
+
+volumes:
+  postgres_data:
