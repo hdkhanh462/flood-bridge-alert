@@ -83,11 +83,11 @@ export function BridgeMap({
           <Popup>
             <div className="space-y-1.5 min-w-40">
               <div className="flex items-center justify-between gap-2">
-                <p className="font-medium">{marker.name}</p>
+                <p className="font-medium m-0! leading-none">{marker.name}</p>
                 <StatusBadge status={marker.status} />
               </div>
               {marker.location ? (
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-sm m-0!">
                   {marker.location}
                 </p>
               ) : null}
@@ -100,7 +100,7 @@ export function BridgeMap({
                   · {formatReadingTime(marker.latestReading.recordedAt)}
                 </p>
               ) : (
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-sm m-0!">
                   Chưa nhận được dữ liệu mực nước.
                 </p>
               )}
