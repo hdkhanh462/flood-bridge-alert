@@ -123,6 +123,7 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             cd "${{ vars.VPS_DEPLOY_PATH }}"
             git pull
-            docker compose pull
-            docker compose up -d
+            cd infra/docker
+            docker compose --env-file ../env/.env.prod pull
+            docker compose --env-file ../env/.env.prod up -d
             docker image prune -f

@@ -1,3 +1,5 @@
+name: flood-bridge-alert
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -18,7 +20,7 @@ services:
 
   server:
     build:
-      context: .
+      context: ../..
       dockerfile: apps/server/Dockerfile
       target: production
     ports:
@@ -46,7 +48,7 @@ services:
 
   web:
     build:
-      context: .
+      context: ../..
       dockerfile: apps/web/Dockerfile
       target: production
       args:
