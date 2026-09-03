@@ -21,7 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@flood-bridge-alert/ui/components/table";
-import { MapPin, Pencil, Plus, Trash2 } from "lucide-react";
+import { Copy, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { SensorStatusBadge } from "@/features/bridges/components/status-badge";
 
@@ -50,6 +51,11 @@ export function BridgesCard({
   onEditThreshold: (bridge: AdminBridge) => void;
   onRequestDelete: (bridge: AdminBridge) => void;
 }) {
+  const copyBridgeId = async (bridge: AdminBridge) => {
+    await navigator.clipboard.writeText(bridge.id);
+    toast.success(`Đã sao chép ID cầu "${bridge.name}"`);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -120,6 +126,14 @@ export function BridgesCard({
                         <Button
                           variant="ghost"
                           size="icon-sm"
+                          aria-label="Sao chép ID cầu"
+                          onClick={() => copyBridgeId(bridge)}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
                           aria-label="Sửa vị trí"
                           onClick={() => onEditLocation(bridge)}
                         >
@@ -173,6 +187,14 @@ export function BridgesCard({
                     )}
                   </p>
                   <div className="mt-2 flex justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Sao chép ID cầu"
+                      onClick={() => copyBridgeId(bridge)}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon-sm"

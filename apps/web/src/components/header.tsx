@@ -53,7 +53,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between gap-4 px-4">
         <NavLink to="/" className="font-semibold text-lg">
-          flood-bridge-alert
+          Cầu An
         </NavLink>
 
         <nav className="hidden items-center gap-6 text-sm md:flex">

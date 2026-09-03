@@ -33,7 +33,7 @@ export function InstallView() {
         Cài đặt ứng dụng
       </h1>
       <p className="mb-6 text-muted-foreground text-sm">
-        Cài đặt flood-bridge-alert lên màn hình chính để mở nhanh và nhận thông
+        Cài đặt Cầu An lên màn hình chính để mở nhanh và nhận thông
         báo như một ứng dụng thông thường.
       </p>
 

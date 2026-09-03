@@ -26,6 +26,8 @@ export function BridgeLocationDialog({
     id: string;
     name: string;
     status?: string | null;
+    location?: string | null;
+    latestReading?: { level: number; recordedAt: string | Date } | null;
     latitude: number | null;
     longitude: number | null;
   };
@@ -49,11 +51,14 @@ export function BridgeLocationDialog({
                 id: bridge.id,
                 name: bridge.name,
                 status: bridge.status,
+                location: bridge.location,
+                latestReading: bridge.latestReading,
                 latitude: bridge.latitude as number,
                 longitude: bridge.longitude as number,
               },
             ]}
             height={320}
+            showDetailLink={false}
           />
         ) : (
           <Empty>
