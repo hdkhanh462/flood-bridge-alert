@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
 
 import { UsersCard } from "./users-card";
 
 export function UsersTab({ enabled }: { enabled: boolean }) {
+  const { data: session } = authClient.useSession();
   const queryClient = useQueryClient();
   const users = useQuery({
     queryKey: ["admin-users"],
@@ -33,6 +35,7 @@ export function UsersTab({ enabled }: { enabled: boolean }) {
       return result.data;
     },
     onSuccess: invalidateUsers,
+    onError: (error) => toast.error(error.message),
   });
   const banUser = useMutation({
     mutationFn: async (userId: string) => {
@@ -41,6 +44,7 @@ export function UsersTab({ enabled }: { enabled: boolean }) {
       return result.data;
     },
     onSuccess: invalidateUsers,
+    onError: (error) => toast.error(error.message),
   });
   const unbanUser = useMutation({
     mutationFn: async (userId: string) => {
@@ -49,6 +53,7 @@ export function UsersTab({ enabled }: { enabled: boolean }) {
       return result.data;
     },
     onSuccess: invalidateUsers,
+    onError: (error) => toast.error(error.message),
   });
 
   return (
@@ -58,6 +63,7 @@ export function UsersTab({ enabled }: { enabled: boolean }) {
       isMutating={
         toggleRole.isPending || banUser.isPending || unbanUser.isPending
       }
+      currentUserId={session?.user.id}
       onToggleRole={(user) =>
         toggleRole.mutate({
           userId: user.id,

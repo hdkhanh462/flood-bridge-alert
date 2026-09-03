@@ -6,6 +6,11 @@ export type BridgeMapMarker = {
   id: string;
   name: string;
   status?: string | null;
+  location?: string | null;
+  latestReading?: {
+    level: number;
+    recordedAt: string | Date;
+  } | null;
   latitude: number;
   longitude: number;
 };

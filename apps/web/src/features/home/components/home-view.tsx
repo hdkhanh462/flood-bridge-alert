@@ -10,7 +10,7 @@ import { orpc } from "@/utils/orpc";
 import { StatCard } from "./stat-card";
 
 export function HomeView() {
-  useDocumentTitle("flood-bridge-alert");
+  useDocumentTitle("Cầu An");
   const healthCheck = useQuery(orpc.healthCheck.queryOptions());
   const bridges = useQuery(orpc.bridge.list.queryOptions());
 

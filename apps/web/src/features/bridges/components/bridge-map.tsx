@@ -19,6 +19,8 @@ import {
   NORTHERN_VIETNAM_MIN_ZOOM,
 } from "../constants";
 import type { BridgeMapMarker } from "../types";
+import { formatReadingTime } from "../utils";
+import { StatusBadge } from "./status-badge";
 
 // Leaflet tính sai kích thước nếu khởi tạo lúc container đang ẩn (tab/dialog
 // chưa active) — ResizeObserver báo lại cho map ngay khi container có kích
@@ -38,10 +40,12 @@ export function BridgeMap({
   markers,
   height = 320,
   className,
+  showDetailLink = true,
 }: {
   markers: BridgeMapMarker[];
   height?: number;
   className?: string;
+  showDetailLink?: boolean;
 }) {
   const center: [number, number] =
     markers.length > 0
@@ -77,14 +81,37 @@ export function BridgeMap({
           }}
         >
           <Popup>
-            <div className="space-y-1">
-              <p className="font-medium">{marker.name}</p>
-              <Link
-                to={`/bridges/${marker.id}`}
-                className="text-primary text-sm underline-offset-4 hover:underline"
-              >
-                Xem chi tiết
-              </Link>
+            <div className="space-y-1.5 min-w-40">
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-medium m-0! leading-none">{marker.name}</p>
+                <StatusBadge status={marker.status} />
+              </div>
+              {marker.location ? (
+                <p className="text-muted-foreground text-sm m-0!">
+                  {marker.location}
+                </p>
+              ) : null}
+              {marker.latestReading ? (
+                <p className="text-sm m-0!">
+                  Mực nước:{" "}
+                  <span className="font-medium">
+                    {marker.latestReading.level} m
+                  </span>{" "}
+                  · {formatReadingTime(marker.latestReading.recordedAt)}
+                </p>
+              ) : (
+                <p className="text-muted-foreground text-sm m-0!">
+                  Chưa nhận được dữ liệu mực nước.
+                </p>
+              )}
+              {showDetailLink ? (
+                <Link
+                  to={`/bridges/${marker.id}`}
+                  className="text-primary text-sm underline-offset-4 hover:underline"
+                >
+                  Xem chi tiết
+                </Link>
+              ) : null}
             </div>
           </Popup>
         </CircleMarker>
