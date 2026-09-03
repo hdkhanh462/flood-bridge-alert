@@ -50,32 +50,57 @@ export function DevicesCard({
             </EmptyHeader>
           </Empty>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Người dùng</TableHead>
-                <TableHead>Khu vực quan tâm</TableHead>
-                <TableHead className="text-right">Ngày đăng ký</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Người dùng</TableHead>
+                    <TableHead>Khu vực quan tâm</TableHead>
+                    <TableHead className="text-right">Ngày đăng ký</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {devices.map((device) => (
+                    <TableRow key={device.id}>
+                      <TableCell>
+                        {device.user.isAnonymous
+                          ? "Ẩn danh"
+                          : device.user.email}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {device.bridges.length === 0
+                          ? "Tất cả các cầu"
+                          : device.bridges
+                              .map((bridge) => bridge.name)
+                              .join(", ")}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {new Date(device.createdAt).toLocaleString("vi-VN")}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="grid gap-3 md:hidden">
               {devices.map((device) => (
-                <TableRow key={device.id}>
-                  <TableCell>
+                <div key={device.id} className="rounded-md border p-3">
+                  <p className="font-medium">
                     {device.user.isAnonymous ? "Ẩn danh" : device.user.email}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  </p>
+                  <p className="text-muted-foreground text-sm">
                     {device.bridges.length === 0
                       ? "Tất cả các cầu"
                       : device.bridges.map((bridge) => bridge.name).join(", ")}
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
+                  </p>
+                  <p className="mt-1 text-muted-foreground text-xs">
                     {new Date(device.createdAt).toLocaleString("vi-VN")}
-                  </TableCell>
-                </TableRow>
+                  </p>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

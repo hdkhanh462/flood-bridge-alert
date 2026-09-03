@@ -48,28 +48,45 @@ export function AlertsCard({
             </EmptyHeader>
           </Empty>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Cầu</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead className="text-right">Thời gian</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Cầu</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead className="text-right">Thời gian</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {alerts.map((alert) => (
+                    <TableRow key={alert.id}>
+                      <TableCell>{alert.bridge.name}</TableCell>
+                      <TableCell>
+                        <StatusBadge status={alert.status} />
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {new Date(alert.createdAt).toLocaleString("vi-VN")}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="grid gap-3 md:hidden">
               {alerts.map((alert) => (
-                <TableRow key={alert.id}>
-                  <TableCell>{alert.bridge.name}</TableCell>
-                  <TableCell>
+                <div key={alert.id} className="rounded-md border p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium">{alert.bridge.name}</span>
                     <StatusBadge status={alert.status} />
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
+                  </div>
+                  <p className="mt-1 text-muted-foreground text-sm">
                     {new Date(alert.createdAt).toLocaleString("vi-VN")}
-                  </TableCell>
-                </TableRow>
+                  </p>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

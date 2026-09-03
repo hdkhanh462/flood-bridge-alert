@@ -61,23 +61,72 @@ export function UsersCard({
             </EmptyHeader>
           </Empty>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Người dùng</TableHead>
-                <TableHead>Vai trò</TableHead>
-                <TableHead className="text-right">Hành động</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Người dùng</TableHead>
+                    <TableHead>Vai trò</TableHead>
+                    <TableHead className="text-right">Hành động</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div className="font-medium">
+                          {user.isAnonymous
+                            ? "Người dùng ẩn danh"
+                            : user.email}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={
+                              user.role === "admin" ? "default" : "secondary"
+                            }
+                          >
+                            {user.role === "admin" ? "Admin" : "Người dùng"}
+                          </Badge>
+                          {user.banned ? (
+                            <Badge variant="destructive">Đã khóa</Badge>
+                          ) : null}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          disabled={isMutating}
+                          onClick={() => onToggleRole(user)}
+                        >
+                          {user.role === "admin"
+                            ? "Bỏ quyền admin"
+                            : "Cấp quyền admin"}
+                        </Button>{" "}
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          disabled={isMutating}
+                          onClick={() => onToggleBan(user)}
+                        >
+                          {user.banned ? "Mở khóa" : "Khóa"}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="grid gap-3 md:hidden">
               {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="font-medium">
+                <div key={user.id} className="rounded-md border p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium">
                       {user.isAnonymous ? "Người dùng ẩn danh" : user.email}
-                    </div>
-                  </TableCell>
-                  <TableCell>
+                    </span>
                     <div className="flex items-center gap-2">
                       <Badge
                         variant={
@@ -90,8 +139,8 @@ export function UsersCard({
                         <Badge variant="destructive">Đã khóa</Badge>
                       ) : null}
                     </div>
-                  </TableCell>
-                  <TableCell className="text-right">
+                  </div>
+                  <div className="mt-2 flex gap-2">
                     <Button
                       variant="outline"
                       size="xs"
@@ -101,7 +150,7 @@ export function UsersCard({
                       {user.role === "admin"
                         ? "Bỏ quyền admin"
                         : "Cấp quyền admin"}
-                    </Button>{" "}
+                    </Button>
                     <Button
                       variant="outline"
                       size="xs"
@@ -110,11 +159,11 @@ export function UsersCard({
                     >
                       {user.banned ? "Mở khóa" : "Khóa"}
                     </Button>
-                  </TableCell>
-                </TableRow>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

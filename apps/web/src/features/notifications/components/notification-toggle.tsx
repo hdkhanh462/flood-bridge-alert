@@ -11,6 +11,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Bell, BellOff } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { usePwaStandalone } from "@/hooks/use-pwa-standalone";
 import { authClient } from "@/lib/auth-client";
 import { orpc } from "@/utils/orpc";
 
@@ -26,6 +27,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
 }
 
 export function NotificationToggle() {
+  const isStandalone = usePwaStandalone();
   const [supported, setSupported] = useState(false);
   const [endpoint, setEndpoint] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -115,7 +117,7 @@ export function NotificationToggle() {
     updateInterestsMutation.mutate({ endpoint, bridgeIds: next });
   }
 
-  if (!supported) return null;
+  if (!supported || !isStandalone) return null;
 
   if (!subscribed) {
     return (

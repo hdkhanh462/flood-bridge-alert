@@ -4,6 +4,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { Outlet } from "react-router";
 
 import "./index.css";
+import { PwaUpdateToast } from "./components/pwa-update-toast";
 import { ThemeProvider } from "./components/theme-provider";
 import { persistOptions, queryClient } from "./utils/orpc";
 
@@ -21,6 +22,7 @@ export default function Root() {
       >
         <Outlet />
         <Toaster richColors />
+        <PwaUpdateToast />
       </ThemeProvider>
       <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
     </PersistQueryClientProvider>

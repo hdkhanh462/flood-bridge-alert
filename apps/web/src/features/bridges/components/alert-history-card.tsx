@@ -33,20 +33,37 @@ export function AlertHistoryCard({
             Chưa có cảnh báo nào cho cầu này.
           </p>
         ) : (
-          <Table>
-            <TableBody>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <TableBody>
+                  {alerts.map((alert) => (
+                    <TableRow key={alert.id}>
+                      <TableCell>
+                        <StatusBadge status={alert.status} />
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {new Date(alert.createdAt).toLocaleString("vi-VN")}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="grid gap-3 md:hidden">
               {alerts.map((alert) => (
-                <TableRow key={alert.id}>
-                  <TableCell>
-                    <StatusBadge status={alert.status} />
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
+                <div
+                  key={alert.id}
+                  className="flex items-center justify-between rounded-md border p-3"
+                >
+                  <StatusBadge status={alert.status} />
+                  <span className="text-muted-foreground text-sm">
                     {new Date(alert.createdAt).toLocaleString("vi-VN")}
-                  </TableCell>
-                </TableRow>
+                  </span>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

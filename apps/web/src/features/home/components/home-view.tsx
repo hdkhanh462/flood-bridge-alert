@@ -59,6 +59,13 @@ export function HomeView() {
           >
             Hướng dẫn an toàn
           </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link to="/guides/install" />}
+          >
+            Cài đặt
+          </Button>
         </div>
       </section>
 
