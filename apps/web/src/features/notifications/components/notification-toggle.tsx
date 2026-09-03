@@ -15,6 +15,8 @@ import { usePwaStandalone } from "@/hooks/use-pwa-standalone";
 import { authClient } from "@/lib/auth-client";
 import { orpc } from "@/utils/orpc";
 
+import { BridgeMuteButton } from "./bridge-mute-button";
+
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -52,6 +54,12 @@ export function NotificationToggle() {
     }),
     enabled: subscribed,
   });
+  const mutes = useQuery({
+    ...orpc.pushSubscription.myMutes.queryOptions({
+      input: { endpoint: endpoint ?? "" },
+    }),
+    enabled: subscribed,
+  });
 
   const subscribeMutation = useMutation(
     orpc.pushSubscription.subscribe.mutationOptions({
@@ -69,6 +77,16 @@ export function NotificationToggle() {
   const updateInterestsMutation = useMutation(
     orpc.pushSubscription.updateInterests.mutationOptions({
       onSuccess: () => interests.refetch(),
+    }),
+  );
+  const muteBridgeMutation = useMutation(
+    orpc.pushSubscription.muteBridge.mutationOptions({
+      onSuccess: () => mutes.refetch(),
+    }),
+  );
+  const unmuteBridgeMutation = useMutation(
+    orpc.pushSubscription.unmuteBridge.mutationOptions({
+      onSuccess: () => mutes.refetch(),
     }),
   );
 
@@ -117,6 +135,16 @@ export function NotificationToggle() {
     updateInterestsMutation.mutate({ endpoint, bridgeIds: next });
   }
 
+  function handleMuteBridge(bridgeId: string, hours: number) {
+    if (!endpoint) return;
+    muteBridgeMutation.mutate({ endpoint, bridgeId, hours });
+  }
+
+  function handleUnmuteBridge(bridgeId: string) {
+    if (!endpoint) return;
+    unmuteBridgeMutation.mutate({ endpoint, bridgeId });
+  }
+
   if (!supported || !isStandalone) return null;
 
   if (!subscribed) {
@@ -156,22 +184,33 @@ export function NotificationToggle() {
           </label>
           <Separator />
           <div className="max-h-48 space-y-2 overflow-y-auto">
-            {bridges.data?.map((bridge) => (
-              <label
-                key={bridge.id}
-                htmlFor={`interest-${bridge.id}`}
-                className="flex items-center gap-2 text-sm"
-              >
-                <Checkbox
-                  id={`interest-${bridge.id}`}
-                  checked={selectedBridgeIds.includes(bridge.id)}
-                  onCheckedChange={(checked) =>
-                    toggleBridgeInterest(bridge.id, checked === true)
-                  }
-                />
-                {bridge.name}
-              </label>
-            ))}
+            {bridges.data?.map((bridge) => {
+              const mute = mutes.data?.mutes.find(
+                (m) => m.bridgeId === bridge.id,
+              );
+              return (
+                <div key={bridge.id} className="flex items-center gap-2">
+                  <label
+                    htmlFor={`interest-${bridge.id}`}
+                    className="flex flex-1 items-center gap-2 text-sm"
+                  >
+                    <Checkbox
+                      id={`interest-${bridge.id}`}
+                      checked={selectedBridgeIds.includes(bridge.id)}
+                      onCheckedChange={(checked) =>
+                        toggleBridgeInterest(bridge.id, checked === true)
+                      }
+                    />
+                    {bridge.name}
+                  </label>
+                  <BridgeMuteButton
+                    mutedUntil={mute ? new Date(mute.mutedUntil) : null}
+                    onMute={(hours) => handleMuteBridge(bridge.id, hours)}
+                    onUnmute={() => handleUnmuteBridge(bridge.id)}
+                  />
+                </div>
+              );
+            })}
           </div>
         </PopoverContent>
       </Popover>

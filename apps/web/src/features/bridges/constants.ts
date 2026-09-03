@@ -11,6 +11,9 @@ export const NORTHERN_VIETNAM_BOUNDS: [[number, number], [number, number]] = [
 ];
 export const NORTHERN_VIETNAM_MIN_ZOOM = 7;
 
+// Phải khớp NEARBY_RADIUS_KM ở packages/api/src/routers/bridge.ts (chỉ dùng để hiển thị thông báo).
+export const NEARBY_RADIUS_KM = 20;
+
 export const MARKER_STATUS_COLORS: Record<string, string> = {
   SAFE: "#16a34a",
   WARNING: "#f59e0b",

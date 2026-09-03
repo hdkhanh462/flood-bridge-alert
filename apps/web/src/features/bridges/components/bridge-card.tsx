@@ -16,6 +16,7 @@ export function BridgeCard({
     id: string;
     name: string;
     location: string | null;
+    distanceKm?: number;
     latestReading: {
       level: number;
       status: string;
@@ -33,7 +34,16 @@ export function BridgeCard({
             </Link>
           </CardTitle>
           {bridge.location ? (
-            <CardDescription>{bridge.location}</CardDescription>
+            <CardDescription>
+              {bridge.location}
+              {bridge.distanceKm != null
+                ? ` · cách ${bridge.distanceKm.toFixed(1)} km`
+                : null}
+            </CardDescription>
+          ) : bridge.distanceKm != null ? (
+            <CardDescription>
+              cách {bridge.distanceKm.toFixed(1)} km
+            </CardDescription>
           ) : null}
         </div>
         <StatusBadge status={bridge.latestReading?.status} />
