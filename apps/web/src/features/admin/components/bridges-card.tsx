@@ -81,30 +81,88 @@ export function BridgesCard({
             </EmptyHeader>
           </Empty>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tên cầu</TableHead>
-                <TableHead>Cảm biến</TableHead>
-                <TableHead>Ngưỡng</TableHead>
-                <TableHead className="text-right">Hành động</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Tên cầu</TableHead>
+                    <TableHead>Cảm biến</TableHead>
+                    <TableHead>Ngưỡng</TableHead>
+                    <TableHead className="text-right">Hành động</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {bridges.map((bridge) => (
+                    <TableRow key={bridge.id}>
+                      <TableCell>
+                        <div className="font-medium">{bridge.name}</div>
+                        {bridge.location ? (
+                          <div className="text-muted-foreground text-xs">
+                            {bridge.location}
+                          </div>
+                        ) : null}
+                      </TableCell>
+                      <TableCell>
+                        <SensorStatusBadge status={bridge.sensorStatus} />
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {bridge.threshold ? (
+                          <>
+                            An toàn ≤ {bridge.threshold.safeMax}m · Cảnh báo ≤{" "}
+                            {bridge.threshold.warningMax}m
+                          </>
+                        ) : (
+                          "Chưa cấu hình"
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label="Sửa vị trí"
+                          onClick={() => onEditLocation(bridge)}
+                        >
+                          <MapPin className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label="Sửa ngưỡng"
+                          onClick={() => onEditThreshold(bridge)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label="Xóa cầu"
+                          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => onRequestDelete(bridge)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="grid gap-3 md:hidden">
               {bridges.map((bridge) => (
-                <TableRow key={bridge.id}>
-                  <TableCell>
-                    <div className="font-medium">{bridge.name}</div>
-                    {bridge.location ? (
-                      <div className="text-muted-foreground text-xs">
-                        {bridge.location}
-                      </div>
-                    ) : null}
-                  </TableCell>
-                  <TableCell>
+                <div key={bridge.id} className="rounded-md border p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <div className="font-medium">{bridge.name}</div>
+                      {bridge.location ? (
+                        <div className="text-muted-foreground text-xs">
+                          {bridge.location}
+                        </div>
+                      ) : null}
+                    </div>
                     <SensorStatusBadge status={bridge.sensorStatus} />
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  </div>
+                  <p className="mt-2 text-muted-foreground text-sm">
                     {bridge.threshold ? (
                       <>
                         An toàn ≤ {bridge.threshold.safeMax}m · Cảnh báo ≤{" "}
@@ -113,8 +171,8 @@ export function BridgesCard({
                     ) : (
                       "Chưa cấu hình"
                     )}
-                  </TableCell>
-                  <TableCell className="text-right">
+                  </p>
+                  <div className="mt-2 flex justify-end gap-1">
                     <Button
                       variant="ghost"
                       size="icon-sm"
@@ -140,11 +198,11 @@ export function BridgesCard({
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </TableCell>
-                </TableRow>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
