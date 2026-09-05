@@ -58,6 +58,9 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 				location: values.location.trim() || undefined,
 				latitude: values.coords?.lat,
 				longitude: values.coords?.lng,
+				sensorHeight: values.sensorHeight.trim()
+					? Number(values.sensorHeight)
+					: undefined,
 			},
 			{ onSuccess: () => setCreateOpen(false) },
 		);
@@ -72,6 +75,9 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 				location: values.location.trim() || undefined,
 				latitude: values.coords?.lat,
 				longitude: values.coords?.lng,
+				sensorHeight: values.sensorHeight.trim()
+					? Number(values.sensorHeight)
+					: undefined,
 			},
 			{ onSuccess: () => setEditingBridge(null) },
 		);

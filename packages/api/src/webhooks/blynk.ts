@@ -31,15 +31,22 @@ export async function ingestBlynkReading(
     }
 
     const recordedAt = input.recordedAt ?? new Date();
+    // Cảm biến siêu âm đo khoảng cách tới mặt nước (giảm khi nước dâng); nếu
+    // cầu có cấu hình sensorHeight (chiều cao lắp đặt), quy đổi ngược lại
+    // thành mực nước thực tế (tăng khi nước dâng) trước khi lưu/so ngưỡng.
+    const level =
+      bridge.sensorHeight != null
+        ? bridge.sensorHeight - input.level
+        : input.level;
     // Chưa cấu hình ngưỡng thì không thể xác định mức độ nguy hiểm, mặc định An toàn và bỏ qua cảnh báo.
     const status = bridge.threshold
-      ? determineBridgeStatus(input.level, bridge.threshold)
+      ? determineBridgeStatus(level, bridge.threshold)
       : BridgeStatus.SAFE;
 
     const reading = await tx.waterLevelReading.create({
       data: {
         bridgeId: input.bridgeId,
-        level: input.level,
+        level,
         status,
         recordedAt,
       },
