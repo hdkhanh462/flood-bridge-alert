@@ -16,8 +16,31 @@
     nên khi status bar (theme-color) đổi sang màu tối, icon/chữ hệ thống vẫn
     giữ màu tối theo mặc định — gây ra tình trạng nền đen chữ đen. -->
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c0c0c" />
+    <!-- CHỈ một thẻ theme-color duy nhất. Trước đây có 2 thẻ media query
+    (light/dark) + 1 thẻ JS thêm động lúc runtime (theme-color-meta.tsx) cùng
+    tồn tại — khi nhiều thẻ theme-color cùng lúc, Chrome/Android không đảm bảo
+    đồng bộ giữa màu nền status bar và màu icon tương phản (mỗi thứ có thể đọc
+    từ thẻ khác nhau), gây ra đúng hiện tượng nền đen + icon cũng tối theo,
+    không tương phản. Script dưới set giá trị đúng ngay từ đầu (chặn render,
+    trước khi có bất kỳ lần paint nào) dựa theo theme đã lưu (storageKey của
+    next-themes) hoặc prefers-color-scheme của hệ thống. -->
+    <meta name="theme-color" content="#ffffff" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("vite-ui-theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute("content", theme === "dark" ? "#0c0c0c" : "#ffffff");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
