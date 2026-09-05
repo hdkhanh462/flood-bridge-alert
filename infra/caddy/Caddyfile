@@ -3,5 +3,9 @@ app.hoangduongkhanh.id.vn {
 }
 
 api.hoangduongkhanh.id.vn {
+	log {
+		output stdout
+		format console
+	}
 	reverse_proxy server:8000
 }
