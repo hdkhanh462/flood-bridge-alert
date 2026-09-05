@@ -11,6 +11,8 @@ import {
   TableRow,
 } from "@flood-bridge-alert/ui/components/table";
 
+import { formatDateTime } from "@/lib/date";
+
 import { StatusBadge } from "./status-badge";
 
 export function AlertHistoryCard({
@@ -43,7 +45,7 @@ export function AlertHistoryCard({
                         <StatusBadge status={alert.status} />
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {new Date(alert.createdAt).toLocaleString("vi-VN")}
+                        {formatDateTime(alert.createdAt)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -58,7 +60,7 @@ export function AlertHistoryCard({
                 >
                   <StatusBadge status={alert.status} />
                   <span className="text-muted-foreground text-sm">
-                    {new Date(alert.createdAt).toLocaleString("vi-VN")}
+                    {formatDateTime(alert.createdAt)}
                   </span>
                 </div>
               ))}

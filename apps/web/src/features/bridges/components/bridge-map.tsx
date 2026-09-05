@@ -11,6 +11,8 @@ import {
 } from "react-leaflet";
 import { Link } from "react-router";
 
+import { formatShortDateTime } from "@/lib/date";
+
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MARKER_COLOR,
@@ -19,7 +21,6 @@ import {
   NORTHERN_VIETNAM_MIN_ZOOM,
 } from "../constants";
 import type { BridgeMapMarker } from "../types";
-import { formatReadingTime } from "../utils";
 import { StatusBadge } from "./status-badge";
 
 // Leaflet tính sai kích thước nếu khởi tạo lúc container đang ẩn (tab/dialog
@@ -97,7 +98,7 @@ export function BridgeMap({
                   <span className="font-medium">
                     {marker.latestReading.level} m
                   </span>{" "}
-                  · {formatReadingTime(marker.latestReading.recordedAt)}
+                  · {formatShortDateTime(marker.latestReading.recordedAt)}
                 </p>
               ) : (
                 <p className="text-muted-foreground text-sm m-0!">

@@ -40,6 +40,9 @@ export function BridgesListView() {
       input: location.status === "granted" ? location.coords : { lat: 0, lng: 0 },
     }),
     enabled: location.status === "granted",
+    // Vị trí đã cache 5 phút (xem useGeolocation) nên giữ dữ liệu cầu tràn
+    // "fresh" trong cùng khoảng đó — tránh refetch lại ngay mỗi lần quay lại trang.
+    staleTime: 5 * 60 * 1000,
   });
 
   const locatedBridges =

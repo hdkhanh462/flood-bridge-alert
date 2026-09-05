@@ -7,8 +7,9 @@ import {
 } from "@flood-bridge-alert/ui/components/card";
 import { Link } from "react-router";
 
+import { formatShortDateTime } from "@/lib/date";
+
 import { StatusBadge } from "./status-badge";
-import { formatReadingTime } from "../utils";
 
 export function BridgeCard({
   bridge,
@@ -56,7 +57,7 @@ export function BridgeCard({
             <span className="font-medium text-foreground">
               {bridge.latestReading.level} m
             </span>{" "}
-            · {formatReadingTime(bridge.latestReading.recordedAt)}
+            · {formatShortDateTime(bridge.latestReading.recordedAt)}
           </p>
         ) : (
           <p className="text-muted-foreground text-sm">

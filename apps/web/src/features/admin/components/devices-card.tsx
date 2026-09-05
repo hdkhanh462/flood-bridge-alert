@@ -20,6 +20,8 @@ import {
   TableRow,
 } from "@flood-bridge-alert/ui/components/table";
 
+import { formatDateTime } from "@/lib/date";
+
 export function DevicesCard({
   devices,
   isLoading,
@@ -76,7 +78,7 @@ export function DevicesCard({
                               .join(", ")}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {new Date(device.createdAt).toLocaleString("vi-VN")}
+                        {formatDateTime(device.createdAt)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -95,7 +97,7 @@ export function DevicesCard({
                       : device.bridges.map((bridge) => bridge.name).join(", ")}
                   </p>
                   <p className="mt-1 text-muted-foreground text-xs">
-                    {new Date(device.createdAt).toLocaleString("vi-VN")}
+                    {formatDateTime(device.createdAt)}
                   </p>
                 </div>
               ))}

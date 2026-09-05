@@ -1,19 +1,12 @@
 import { useMemo, useState } from "react";
 
+import { formatShortDateTime } from "@/lib/date";
+
 import type { WaterLevelReading, WaterLevelThreshold } from "../types";
 
 const WIDTH = 640;
 const HEIGHT = 240;
 const PADDING = { top: 16, right: 16, bottom: 24, left: 40 };
-
-function formatTime(date: Date) {
-  return date.toLocaleString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export function WaterLevelChart({
   readings,
@@ -217,7 +210,7 @@ export function WaterLevelChart({
           y={HEIGHT - 6}
           className="fill-muted-foreground text-[10px]"
         >
-          {formatTime(new Date(readings[0]?.recordedAt ?? Date.now()))}
+          {formatShortDateTime(readings[0]?.recordedAt ?? new Date())}
         </text>
         <text
           x={WIDTH - PADDING.right}
@@ -225,8 +218,8 @@ export function WaterLevelChart({
           textAnchor="end"
           className="fill-muted-foreground text-[10px]"
         >
-          {formatTime(
-            new Date(readings[readings.length - 1]?.recordedAt ?? Date.now()),
+          {formatShortDateTime(
+            readings[readings.length - 1]?.recordedAt ?? new Date(),
           )}
         </text>
       </svg>
@@ -242,7 +235,7 @@ export function WaterLevelChart({
         >
           <div className="font-medium">{hovered.reading.level} m</div>
           <div className="text-muted-foreground">
-            {formatTime(new Date(hovered.reading.recordedAt))}
+            {formatShortDateTime(hovered.reading.recordedAt)}
           </div>
         </div>
       ) : null}
