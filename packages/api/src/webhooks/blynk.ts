@@ -10,7 +10,9 @@ import { determineBridgeStatus } from "../flood/status";
 
 export const blynkWebhookInputSchema = z.object({
   bridgeId: z.string().min(1),
-  level: z.number().finite(),
+  // Blynk template variable (ví dụ device_pinValue) có thể được serialize
+  // thành chuỗi thay vì số tuỳ theo cấu hình webhook — coerce để chấp nhận cả hai.
+  level: z.coerce.number().finite(),
   recordedAt: z.coerce.date().optional(),
 });
 
