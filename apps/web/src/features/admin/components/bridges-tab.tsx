@@ -58,9 +58,6 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 				location: values.location.trim() || undefined,
 				latitude: values.coords?.lat,
 				longitude: values.coords?.lng,
-				sensorHeight: values.sensorHeight.trim()
-					? Number(values.sensorHeight)
-					: undefined,
 			},
 			{ onSuccess: () => setCreateOpen(false) },
 		);
@@ -75,9 +72,6 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 				location: values.location.trim() || undefined,
 				latitude: values.coords?.lat,
 				longitude: values.coords?.lng,
-				sensorHeight: values.sensorHeight.trim()
-					? Number(values.sensorHeight)
-					: undefined,
 			},
 			{ onSuccess: () => setEditingBridge(null) },
 		);
@@ -86,6 +80,7 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 	function handleUpdateThreshold(values: {
 		safeMax: number;
 		warningMax: number;
+		sensorHeight: string;
 	}) {
 		if (!editingThreshold) return;
 		upsertThreshold.mutate(
@@ -93,6 +88,9 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 				bridgeId: editingThreshold.id,
 				safeMax: values.safeMax,
 				warningMax: values.warningMax,
+				sensorHeight: values.sensorHeight.trim()
+					? Number(values.sensorHeight)
+					: undefined,
 			},
 			{ onSuccess: () => setEditingThreshold(null) },
 		);

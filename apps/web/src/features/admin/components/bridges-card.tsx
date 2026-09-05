@@ -142,7 +142,7 @@ export function BridgesCard({
                         <Button
                           variant="ghost"
                           size="icon-sm"
-                          aria-label="Sửa ngưỡng"
+                          aria-label="Cấu hình cảm biến"
                           onClick={() => onEditThreshold(bridge)}
                         >
                           <Pencil className="h-4 w-4" />
