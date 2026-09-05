@@ -12,6 +12,10 @@
     />
     <title>Cầu An</title>
     <meta name="description" content="Cầu An is a web application" />
+    <!-- Thiếu tag này khiến Android chỉ giả định trang luôn ở chế độ sáng,
+    nên khi status bar (theme-color) đổi sang màu tối, icon/chữ hệ thống vẫn
+    giữ màu tối theo mặc định — gây ra tình trạng nền đen chữ đen. -->
+    <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c0c0c" />
   </head>
