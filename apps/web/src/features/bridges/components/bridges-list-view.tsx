@@ -66,7 +66,7 @@ export function BridgesListView() {
       >
         <TabsList className="mb-4">
           <TabsTrigger value="nearby">Gần bạn</TabsTrigger>
-          <TabsTrigger value="all">Tất cả cầu tràn</TabsTrigger>
+          <TabsTrigger value="all">Tất cả</TabsTrigger>
         </TabsList>
 
         <TabsContent value="nearby">
@@ -139,7 +139,7 @@ export function BridgesListView() {
                 <EmptyTitle>Không có cầu tràn nào gần bạn</EmptyTitle>
                 <EmptyDescription>
                   Không tìm thấy cầu tràn nào trong bán kính {NEARBY_RADIUS_KM}
-                  km quanh vị trí hiện tại của bạn. Xem tất cả cầu tràn ở tab
+                  km quanh vị trí hiện tại của bạn. Xem Tất cả ở tab
                   bên cạnh.
                 </EmptyDescription>
               </EmptyHeader>
