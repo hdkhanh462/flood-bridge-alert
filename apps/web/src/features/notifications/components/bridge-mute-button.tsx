@@ -9,6 +9,8 @@ import {
 import { cn } from "@flood-bridge-alert/ui/lib/utils";
 import { BellOff } from "lucide-react";
 
+import { formatTime } from "@/lib/format-date";
+
 const MUTE_DURATION_OPTIONS = [
   { label: "Tắt 1 giờ", hours: 1 },
   { label: "Tắt 4 giờ", hours: 4 },
@@ -37,7 +39,7 @@ export function BridgeMuteButton({
             className={cn(isMuted && "text-amber-600 hover:text-amber-600")}
             aria-label={
               isMuted
-                ? `Đã tắt thông báo đến ${mutedUntil.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`
+                ? `Đã tắt thông báo đến ${formatTime(mutedUntil)}`
                 : "Tạm tắt thông báo cho cầu này"
             }
           />
