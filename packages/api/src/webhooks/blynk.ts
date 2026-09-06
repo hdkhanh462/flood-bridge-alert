@@ -12,6 +12,8 @@ export const blynkWebhookInputSchema = z.object({
   bridgeId: z.string().min(1),
   // Blynk template variable (ví dụ device_pinValue) có thể được serialize
   // thành chuỗi thay vì số tuỳ theo cấu hình webhook — coerce để chấp nhận cả hai.
+  // Đơn vị: CENTIMET — khớp với giá trị cảm biến siêu âm A02YYUW gửi lên V1
+  // (xem firmware ESP32). Không phải mét như sensorHeight/threshold ở dưới.
   level: z.coerce.number().finite(),
   recordedAt: z.coerce.date().optional(),
 });
@@ -33,12 +35,15 @@ export async function ingestBlynkReading(
     }
 
     const recordedAt = input.recordedAt ?? new Date();
-    // Cảm biến siêu âm đo khoảng cách tới mặt nước (giảm khi nước dâng); nếu
-    // cầu có cấu hình sensorHeight (chiều cao lắp đặt), quy đổi ngược lại
-    // thành mực nước thực tế (tăng khi nước dâng) trước khi lưu/so ngưỡng.
+    // Cảm biến siêu âm đo khoảng cách tới mặt nước bằng CM (giảm khi nước
+    // dâng); nếu cầu có cấu hình sensorHeight (chiều cao lắp đặt, đơn vị MÉT
+    // — xem modal "Cấu hình cảm biến" ở admin), quy đổi cm sang mét rồi trừ
+    // ngược lại thành mực nước thực tế (tăng khi nước dâng) trước khi lưu/so
+    // ngưỡng. Không có sensorHeight nghĩa là cảm biến đã tự gửi thẳng mực
+    // nước (mét), dùng nguyên giá trị.
     const level =
       bridge.sensorHeight != null
-        ? bridge.sensorHeight - input.level
+        ? bridge.sensorHeight - input.level / 100
         : input.level;
     // Chưa cấu hình ngưỡng thì không thể xác định mức độ nguy hiểm, mặc định An toàn và bỏ qua cảnh báo.
     const status = bridge.threshold
