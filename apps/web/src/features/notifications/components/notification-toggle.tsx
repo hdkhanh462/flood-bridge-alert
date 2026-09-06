@@ -45,6 +45,22 @@ export function NotificationToggle() {
     });
   }, []);
 
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
+
+  // Đăng ký push gắn với session lúc bật (thường là user anonymous). Nếu
+  // đăng xuất, session mất nhưng subscription trên trình duyệt vẫn còn, nên
+  // UI vẫn hiện "Đã bật thông báo" trong khi mọi request quản lý nó (đổi
+  // cầu, tắt thông báo...) đều bị unauthorize vì không còn session hợp lệ.
+  // Tự huỷ subscription trên trình duyệt để đưa UI về đúng trạng thái.
+  useEffect(() => {
+    if (isSessionPending || session || endpoint === null) return;
+    navigator.serviceWorker.ready
+      .then((registration) => registration.pushManager.getSubscription())
+      .then((subscription) => subscription?.unsubscribe());
+    setEndpoint(null);
+  }, [isSessionPending, session, endpoint]);
+
   const bridges = useQuery({
     ...orpc.bridge.list.queryOptions(),
     enabled: subscribed,
