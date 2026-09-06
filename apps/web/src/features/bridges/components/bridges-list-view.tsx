@@ -103,7 +103,7 @@ export function BridgesListView() {
               <Skeleton className="h-32 w-full" />
               <Skeleton className="h-32 w-full" />
             </div>
-          ) : bridges.isError ? (
+          ) : bridges.isError && !bridges.data ? (
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">

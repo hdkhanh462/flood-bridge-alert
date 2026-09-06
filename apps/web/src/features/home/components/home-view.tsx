@@ -14,6 +14,15 @@ export function HomeView() {
   const healthCheck = useQuery(orpc.healthCheck.queryOptions());
   const bridges = useQuery(orpc.bridge.list.queryOptions());
 
+  // Trong lúc cache persist (localStorage) đang được khôi phục lúc khởi động,
+  // isFetching bị chặn nên isLoading tính ra false dù data vẫn chưa có gì —
+  // nếu không chờ isFetched, số liệu cầu tràn sẽ chớp sai về "0" một khoảnh
+  // khắc thay vì hiện dữ liệu cache lần trước. healthCheck thì ngược lại:
+  // không persist (xem orpc.ts) nên luôn phản ánh đúng kết nối hiện tại, isLoading
+  // gốc là đủ.
+  const isBridgesResolving =
+    bridges.isLoading || (!bridges.data && !bridges.isFetched);
+
   const counts: Record<string, number> = {
     SAFE: 0,
     WARNING: 0,
@@ -80,19 +89,19 @@ export function HomeView() {
           label="An toàn"
           variant="success"
           value={counts.SAFE}
-          isLoading={bridges.isLoading}
+          isLoading={isBridgesResolving}
         />
         <StatCard
           label="Cảnh báo"
           variant="warning"
           value={counts.WARNING}
-          isLoading={bridges.isLoading}
+          isLoading={isBridgesResolving}
         />
         <StatCard
           label="Nguy hiểm"
           variant="destructive"
           value={counts.DANGER}
-          isLoading={bridges.isLoading}
+          isLoading={isBridgesResolving}
         />
       </section>
     </>
