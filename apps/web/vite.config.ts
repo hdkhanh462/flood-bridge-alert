@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       tailwindcss(),
       VitePWA({
-        registerType: "prompt",
+        registerType: "autoUpdate",
         strategies: "injectManifest",
         srcDir: "src",
         filename: "sw.ts",
@@ -22,7 +22,8 @@ export default defineConfig(({ mode }) => {
           name: "Cầu An",
           short_name: "Cầu An",
           description: "Cầu An - PWA Application",
-          theme_color: "#0c0c0c",
+          theme_color: "#ffffff",
+          background_color: "#ffffff",
         },
         pwaAssets: { disabled: false, config: true },
         devOptions: { enabled: true, type: "module" },
