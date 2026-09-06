@@ -60,133 +60,129 @@ export function BridgesListView() {
         <NotificationToggle />
       </div>
 
-      {location.status === "idle" || location.status === "loading" ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <LocateFixed />
-            </EmptyMedia>
-            <EmptyTitle>Đang xác định vị trí của bạn...</EmptyTitle>
-            <EmptyDescription>
-              Chỉ hiển thị các cầu tràn trong bán kính {NEARBY_RADIUS_KM}km
-              quanh bạn.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : location.status === "unsupported" || location.status === "denied" ? (
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-muted/50 px-4 py-3">
-            <p className="text-muted-foreground text-sm">
-              {location.status === "unsupported"
-                ? "Trình duyệt không hỗ trợ định vị nên không thể lọc cầu tràn gần bạn."
-                : "Chưa thể lấy vị trí của bạn nên không thể lọc cầu tràn gần bạn."}
-            </p>
-            {location.status === "denied" ? (
-              <Button variant="outline" size="sm" onClick={requestLocation}>
-                <LocateFixed className="h-4 w-4" />
-                Thử lại
-              </Button>
-            ) : null}
-          </div>
-          <BridgeSearchList />
-        </div>
-      ) : (
-        <Tabs
-          value={view}
-          onValueChange={(value) => setView(value as "nearby" | "all")}
-        >
-          <TabsList className="mb-4">
-            <TabsTrigger value="nearby">Gần bạn</TabsTrigger>
-            <TabsTrigger value="all">Tất cả cầu tràn</TabsTrigger>
-          </TabsList>
+      <Tabs
+        value={view}
+        onValueChange={(value) => setView(value as "nearby" | "all")}
+      >
+        <TabsList className="mb-4">
+          <TabsTrigger value="nearby">Gần bạn</TabsTrigger>
+          <TabsTrigger value="all">Tất cả cầu tràn</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="nearby">
-            {bridges.isLoading ? (
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-32 w-full" />
-              </div>
-            ) : bridges.isError ? (
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Waves />
-                  </EmptyMedia>
-                  <EmptyTitle>Không thể tải danh sách cầu tràn</EmptyTitle>
-                  <EmptyDescription>
-                    Đã có lỗi khi kết nối máy chủ. Vui lòng thử lại.
-                  </EmptyDescription>
-                </EmptyHeader>
-                <Button variant="outline" onClick={() => bridges.refetch()}>
+        <TabsContent value="nearby">
+          {location.status === "idle" || location.status === "loading" ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <LocateFixed />
+                </EmptyMedia>
+                <EmptyTitle>Đang xác định vị trí của bạn...</EmptyTitle>
+                <EmptyDescription>
+                  Chỉ hiển thị các cầu tràn trong bán kính {NEARBY_RADIUS_KM}km
+                  quanh bạn.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : location.status === "unsupported" ||
+            location.status === "denied" ? (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-muted/50 px-4 py-3">
+              <p className="text-muted-foreground text-sm">
+                {location.status === "unsupported"
+                  ? "Trình duyệt không hỗ trợ định vị nên không thể lọc cầu tràn gần bạn."
+                  : "Chưa thể lấy vị trí của bạn nên không thể lọc cầu tràn gần bạn."}
+              </p>
+              {location.status === "denied" ? (
+                <Button variant="outline" size="sm" onClick={requestLocation}>
+                  <LocateFixed className="h-4 w-4" />
                   Thử lại
                 </Button>
-              </Empty>
-            ) : bridges.data?.total === 0 ? (
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Waves />
-                  </EmptyMedia>
-                  <EmptyTitle>Chưa có cầu tràn nào</EmptyTitle>
-                  <EmptyDescription>
-                    Quản trị viên chưa thêm cầu tràn nào vào hệ thống.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : bridges.data?.items.length === 0 ? (
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Waves />
-                  </EmptyMedia>
-                  <EmptyTitle>Không có cầu tràn nào gần bạn</EmptyTitle>
-                  <EmptyDescription>
-                    Không tìm thấy cầu tràn nào trong bán kính{" "}
-                    {NEARBY_RADIUS_KM}km quanh vị trí hiện tại của bạn. Xem tất
-                    cả cầu tràn ở tab bên cạnh.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : (
-              <Tabs defaultValue="grid">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="grid">Lưới</TabsTrigger>
-                  <TabsTrigger value="map">Bản đồ</TabsTrigger>
-                </TabsList>
+              ) : null}
+            </div>
+          ) : bridges.isLoading ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          ) : bridges.isError ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Waves />
+                </EmptyMedia>
+                <EmptyTitle>Không thể tải danh sách cầu tràn</EmptyTitle>
+                <EmptyDescription>
+                  Đã có lỗi khi kết nối máy chủ. Vui lòng thử lại.
+                </EmptyDescription>
+              </EmptyHeader>
+              <Button variant="outline" onClick={() => bridges.refetch()}>
+                Thử lại
+              </Button>
+            </Empty>
+          ) : bridges.data?.total === 0 ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Waves />
+                </EmptyMedia>
+                <EmptyTitle>Chưa có cầu tràn nào</EmptyTitle>
+                <EmptyDescription>
+                  Quản trị viên chưa thêm cầu tràn nào vào hệ thống.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : bridges.data?.items.length === 0 ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Waves />
+                </EmptyMedia>
+                <EmptyTitle>Không có cầu tràn nào gần bạn</EmptyTitle>
+                <EmptyDescription>
+                  Không tìm thấy cầu tràn nào trong bán kính {NEARBY_RADIUS_KM}
+                  km quanh vị trí hiện tại của bạn. Xem tất cả cầu tràn ở tab
+                  bên cạnh.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <Tabs defaultValue="grid">
+              <TabsList className="mb-4">
+                <TabsTrigger value="grid">Lưới</TabsTrigger>
+                <TabsTrigger value="map">Bản đồ</TabsTrigger>
+              </TabsList>
 
-                <TabsContent value="grid">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {bridges.data?.items.map((bridge) => (
-                      <BridgeCard key={bridge.id} bridge={bridge} />
-                    ))}
-                  </div>
-                </TabsContent>
+              <TabsContent value="grid">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {bridges.data?.items.map((bridge) => (
+                    <BridgeCard key={bridge.id} bridge={bridge} />
+                  ))}
+                </div>
+              </TabsContent>
 
-                <TabsContent value="map">
-                  <div className="overflow-hidden rounded-md border">
-                    <BridgeMap
-                      markers={locatedBridges.map((bridge) => ({
-                        id: bridge.id,
-                        name: bridge.name,
-                        status: bridge.latestReading?.status,
-                        location: bridge.location,
-                        latestReading: bridge.latestReading,
-                        latitude: bridge.latitude as number,
-                        longitude: bridge.longitude as number,
-                      }))}
-                      height={420}
-                    />
-                  </div>
-                </TabsContent>
-              </Tabs>
-            )}
-          </TabsContent>
+              <TabsContent value="map">
+                <div className="overflow-hidden rounded-md border">
+                  <BridgeMap
+                    markers={locatedBridges.map((bridge) => ({
+                      id: bridge.id,
+                      name: bridge.name,
+                      status: bridge.latestReading?.status,
+                      location: bridge.location,
+                      latestReading: bridge.latestReading,
+                      latitude: bridge.latitude as number,
+                      longitude: bridge.longitude as number,
+                    }))}
+                    height={420}
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
+          )}
+        </TabsContent>
 
-          <TabsContent value="all">
-            <BridgeSearchList />
-          </TabsContent>
-        </Tabs>
-      )}
+        <TabsContent value="all">
+          <BridgeSearchList />
+        </TabsContent>
+      </Tabs>
     </>
   );
 }
