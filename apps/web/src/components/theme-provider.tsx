@@ -10,15 +10,20 @@ function ThemeColorMeta() {
   useEffect(() => {
     if (resolvedTheme !== "light" && resolvedTheme !== "dark") return;
 
-    let meta = document.querySelector<HTMLMetaElement>(
+    const metas = document.querySelectorAll<HTMLMetaElement>(
       'meta[name="theme-color"]',
     );
-    if (!meta) {
-      meta = document.createElement("meta");
+    const color = THEME_COLORS[resolvedTheme];
+
+    if (metas.length === 0) {
+      const meta = document.createElement("meta");
       meta.name = "theme-color";
+      meta.content = color;
       document.head.appendChild(meta);
+      return;
     }
-    meta.content = THEME_COLORS[resolvedTheme];
+
+    for (const meta of metas) meta.content = color;
   }, [resolvedTheme]);
 
   return null;
