@@ -210,7 +210,7 @@ export function WaterLevelChart({
           y={HEIGHT - 6}
           className="fill-muted-foreground text-[10px]"
         >
-          {formatShortDateTime(new Date(readings[0]?.recordedAt ?? Date.now()))}
+          {formatShortDateTime(readings[0]?.recordedAt ?? new Date())}
         </text>
         <text
           x={WIDTH - PADDING.right}
@@ -219,7 +219,7 @@ export function WaterLevelChart({
           className="fill-muted-foreground text-[10px]"
         >
           {formatShortDateTime(
-            new Date(readings[readings.length - 1]?.recordedAt ?? Date.now()),
+            readings[readings.length - 1]?.recordedAt ?? new Date(),
           )}
         </text>
       </svg>
@@ -235,7 +235,7 @@ export function WaterLevelChart({
         >
           <div className="font-medium">{hovered.reading.level} m</div>
           <div className="text-muted-foreground">
-            {formatShortDateTime(new Date(hovered.reading.recordedAt))}
+            {formatShortDateTime(hovered.reading.recordedAt)}
           </div>
         </div>
       ) : null}

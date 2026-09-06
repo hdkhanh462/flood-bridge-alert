@@ -17,13 +17,17 @@ export function EditThresholdDialog({
   bridge: AdminBridge | null;
   onOpenChange: (open: boolean) => void;
   isPending: boolean;
-  onSubmit: (values: { safeMax: number; warningMax: number }) => void;
+  onSubmit: (values: {
+    safeMax: number;
+    warningMax: number;
+    sensorHeight: string;
+  }) => void;
 }) {
   return (
     <Dialog open={bridge !== null} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Cấu hình ngưỡng — {bridge?.name}</DialogTitle>
+          <DialogTitle>Cấu hình cảm biến — {bridge?.name}</DialogTitle>
         </DialogHeader>
         <EditThresholdForm
           key={bridge?.id ?? "none"}

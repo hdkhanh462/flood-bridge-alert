@@ -45,7 +45,6 @@ export const adminRouter = {
           location: z.string().min(1).optional(),
           latitude: z.number().min(-90).max(90).optional(),
           longitude: z.number().min(-180).max(180).optional(),
-          sensorHeight: z.number().min(0).optional(),
         }),
       )
       .handler(async ({ input }) => {
@@ -55,7 +54,6 @@ export const adminRouter = {
             location: input.location,
             latitude: input.latitude,
             longitude: input.longitude,
-            sensorHeight: input.sensorHeight,
           },
         });
       }),
@@ -68,7 +66,6 @@ export const adminRouter = {
           location: z.string().min(1).optional(),
           latitude: z.number().min(-90).max(90).optional(),
           longitude: z.number().min(-180).max(180).optional(),
-          sensorHeight: z.number().min(0).optional(),
         }),
       )
       .handler(async ({ input }) => {
@@ -80,7 +77,6 @@ export const adminRouter = {
               location: input.location,
               latitude: input.latitude,
               longitude: input.longitude,
-              sensorHeight: input.sensorHeight,
             },
           });
         } catch {
@@ -107,6 +103,7 @@ export const adminRouter = {
           bridgeId: z.string().min(1),
           safeMax: z.number().finite(),
           warningMax: z.number().finite(),
+          sensorHeight: z.number().min(0).optional(),
         }),
       )
       .handler(async ({ input }) => {
@@ -121,15 +118,22 @@ export const adminRouter = {
         if (!bridge) {
           throw new ORPCError("NOT_FOUND");
         }
-        return await prisma.threshold.upsert({
-          where: { bridgeId: input.bridgeId },
-          create: {
-            bridgeId: input.bridgeId,
-            safeMax: input.safeMax,
-            warningMax: input.warningMax,
-          },
-          update: { safeMax: input.safeMax, warningMax: input.warningMax },
-        });
+        const [threshold] = await Promise.all([
+          prisma.threshold.upsert({
+            where: { bridgeId: input.bridgeId },
+            create: {
+              bridgeId: input.bridgeId,
+              safeMax: input.safeMax,
+              warningMax: input.warningMax,
+            },
+            update: { safeMax: input.safeMax, warningMax: input.warningMax },
+          }),
+          prisma.bridge.update({
+            where: { id: input.bridgeId },
+            data: { sensorHeight: input.sensorHeight },
+          }),
+        ]);
+        return threshold;
       }),
   },
 

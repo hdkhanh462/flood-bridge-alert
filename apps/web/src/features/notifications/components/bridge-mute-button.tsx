@@ -19,10 +19,12 @@ const MUTE_DURATION_OPTIONS = [
 
 export function BridgeMuteButton({
   mutedUntil,
+  disabled,
   onMute,
   onUnmute,
 }: {
   mutedUntil: Date | null;
+  disabled?: boolean;
   onMute: (hours: number) => void;
   onUnmute: () => void;
 }) {
@@ -36,6 +38,7 @@ export function BridgeMuteButton({
             type="button"
             variant="ghost"
             size="icon-sm"
+            disabled={disabled}
             className={cn(isMuted && "text-amber-600 hover:text-amber-600")}
             aria-label={
               isMuted

@@ -62,13 +62,39 @@ app.use(async (req, res, next) => {
   next();
 });
 
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, _res, buf) => {
+      (req as express.Request & { rawBody?: string }).rawBody =
+        buf.toString("utf-8");
+    },
+  }),
+);
 
 app.use("/webhooks", blynkWebhookRouter);
 
 app.get("/", (_req, res) => {
   res.status(200).send("OK");
 });
+
+// Body không phải JSON hợp lệ (ví dụ template webhook của Blynk cấu hình sai
+// định dạng) — log lại nội dung thô để chẩn đoán thay vì chỉ thấy stack trace
+// của JSON.parse.
+app.use(
+  (
+    err: unknown,
+    req: express.Request & { rawBody?: string },
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    if (err instanceof SyntaxError && "body" in err) {
+      console.error("Invalid JSON body received:", req.rawBody);
+      res.status(400).json({ error: "Invalid JSON body" });
+      return;
+    }
+    next(err);
+  },
+);
 
 app.listen(env.PORT, () => {
   console.log(`Server is running on http://localhost:${env.PORT}`);

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { orpc } from "@/utils/orpc";
@@ -26,17 +27,29 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 
 	const createBridge = useMutation(
 		orpc.admin.bridge.create.mutationOptions({
-			onSuccess: () => bridges.refetch(),
+			onSuccess: () => {
+				bridges.refetch();
+				toast.success("Đã thêm cầu mới");
+			},
+			onError: (error) => toast.error(error.message),
 		}),
 	);
 	const updateBridge = useMutation(
 		orpc.admin.bridge.update.mutationOptions({
-			onSuccess: () => bridges.refetch(),
+			onSuccess: () => {
+				bridges.refetch();
+				toast.success("Đã lưu vị trí cầu");
+			},
+			onError: (error) => toast.error(error.message),
 		}),
 	);
 	const upsertThreshold = useMutation(
 		orpc.admin.threshold.upsert.mutationOptions({
-			onSuccess: () => bridges.refetch(),
+			onSuccess: () => {
+				bridges.refetch();
+				toast.success("Đã lưu cấu hình cảm biến");
+			},
+			onError: (error) => toast.error(error.message),
 		}),
 	);
 	const deleteBridge = useMutation(
@@ -47,7 +60,9 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 					queryKey: orpc.admin.alertHistory.list.key(),
 				});
 				setDeletingBridge(null);
+				toast.success("Đã xóa cầu");
 			},
+			onError: (error) => toast.error(error.message),
 		}),
 	);
 
@@ -58,9 +73,6 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 				location: values.location.trim() || undefined,
 				latitude: values.coords?.lat,
 				longitude: values.coords?.lng,
-				sensorHeight: values.sensorHeight.trim()
-					? Number(values.sensorHeight)
-					: undefined,
 			},
 			{ onSuccess: () => setCreateOpen(false) },
 		);
@@ -75,9 +87,6 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 				location: values.location.trim() || undefined,
 				latitude: values.coords?.lat,
 				longitude: values.coords?.lng,
-				sensorHeight: values.sensorHeight.trim()
-					? Number(values.sensorHeight)
-					: undefined,
 			},
 			{ onSuccess: () => setEditingBridge(null) },
 		);
@@ -86,6 +95,7 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 	function handleUpdateThreshold(values: {
 		safeMax: number;
 		warningMax: number;
+		sensorHeight: string;
 	}) {
 		if (!editingThreshold) return;
 		upsertThreshold.mutate(
@@ -93,6 +103,9 @@ export function BridgesTab({ enabled }: { enabled: boolean }) {
 				bridgeId: editingThreshold.id,
 				safeMax: values.safeMax,
 				warningMax: values.warningMax,
+				sensorHeight: values.sensorHeight.trim()
+					? Number(values.sensorHeight)
+					: undefined,
 			},
 			{ onSuccess: () => setEditingThreshold(null) },
 		);

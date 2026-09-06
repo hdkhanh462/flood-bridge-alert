@@ -47,13 +47,18 @@ export function HomeView() {
           vực, nhận thông báo ngay khi có thay đổi để chủ động phòng tránh nguy
           hiểm.
         </p>
-        <div className="flex flex-wrap gap-3 pt-2">
-          <Button nativeButton={false} render={<Link to="/bridges" />}>
+        <div className="flex w-full flex-col gap-3 pt-2 sm:w-auto sm:flex-row sm:flex-wrap">
+          <Button
+            className="w-full sm:w-auto"
+            nativeButton={false}
+            render={<Link to="/bridges" />}
+          >
             Xem trạng thái cầu tràn
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
+            className="w-full sm:w-auto"
             nativeButton={false}
             render={<Link to="/guides/safety" />}
           >
@@ -61,10 +66,11 @@ export function HomeView() {
           </Button>
           <Button
             variant="outline"
+            className="w-full sm:w-auto"
             nativeButton={false}
             render={<Link to="/guides/install" />}
           >
-            Cài đặt
+            Hướng dẫn cài đặt
           </Button>
         </div>
       </section>

@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       tailwindcss(),
       VitePWA({
-        registerType: "autoUpdate",
+        registerType: "prompt",
         strategies: "injectManifest",
         srcDir: "src",
         filename: "sw.ts",
