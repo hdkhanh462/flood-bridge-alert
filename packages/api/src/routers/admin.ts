@@ -30,6 +30,7 @@ export const adminRouter = {
           location: bridge.location,
           latitude: bridge.latitude,
           longitude: bridge.longitude,
+          sensorHeight: bridge.sensorHeight,
           threshold: bridge.threshold,
           latestReading,
           sensorStatus: toSensorStatus(latestReading?.recordedAt ?? null),
@@ -44,6 +45,7 @@ export const adminRouter = {
           location: z.string().min(1).optional(),
           latitude: z.number().min(-90).max(90).optional(),
           longitude: z.number().min(-180).max(180).optional(),
+          sensorHeight: z.number().min(0).optional(),
         }),
       )
       .handler(async ({ input }) => {
@@ -53,6 +55,7 @@ export const adminRouter = {
             location: input.location,
             latitude: input.latitude,
             longitude: input.longitude,
+            sensorHeight: input.sensorHeight,
           },
         });
       }),
@@ -65,6 +68,7 @@ export const adminRouter = {
           location: z.string().min(1).optional(),
           latitude: z.number().min(-90).max(90).optional(),
           longitude: z.number().min(-180).max(180).optional(),
+          sensorHeight: z.number().min(0).optional(),
         }),
       )
       .handler(async ({ input }) => {
@@ -76,6 +80,7 @@ export const adminRouter = {
               location: input.location,
               latitude: input.latitude,
               longitude: input.longitude,
+              sensorHeight: input.sensorHeight,
             },
           });
         } catch {

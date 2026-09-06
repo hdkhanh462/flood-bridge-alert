@@ -4,6 +4,7 @@ export const bridgeDetailsSchema = z.object({
   name: z.string().min(1, "Tên cầu không được để trống"),
   location: z.string(),
   coords: z.object({ lat: z.number(), lng: z.number() }).nullable(),
+  sensorHeight: z.string(),
 });
 
 export const thresholdSchema = z

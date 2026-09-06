@@ -10,6 +10,11 @@ model Bridge {
   location  String?
   latitude  Float?
   longitude Float?
+  // Chiều cao lắp đặt cảm biến so với mốc 0 (m). Dùng để quy đổi khoảng cách
+  // đo được từ cảm biến siêu âm (giảm khi nước dâng) sang mực nước thực tế
+  // (tăng khi nước dâng): level = sensorHeight - distance. Null nếu cảm biến
+  // đã tự gửi thẳng mực nước, không cần quy đổi.
+  sensorHeight Float?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

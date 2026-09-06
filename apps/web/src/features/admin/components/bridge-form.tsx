@@ -14,6 +14,7 @@ export type BridgeFormValues = {
   name: string;
   location: string;
   coords: Coords | null;
+  sensorHeight: string;
 };
 
 export function BridgeForm({
@@ -36,6 +37,7 @@ export function BridgeForm({
       coords: (bridge?.latitude != null && bridge?.longitude != null
         ? { lat: bridge.latitude, lng: bridge.longitude }
         : null) as Coords | null,
+      sensorHeight: bridge?.sensorHeight != null ? String(bridge.sensorHeight) : "",
     },
     onSubmit: handleSubmit,
     validators: {
@@ -97,6 +99,31 @@ export function BridgeForm({
                 value={field.state.value}
                 onChange={field.handleChange}
               />
+            </div>
+          )}
+        </form.Field>
+        <form.Field name="sensorHeight">
+          {(field) => (
+            <div className="grid gap-2">
+              <Label htmlFor={field.name}>
+                Chiều cao lắp đặt cảm biến (m)
+              </Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="number"
+                step="any"
+                min={0}
+                placeholder="Bỏ trống nếu cảm biến gửi thẳng mực nước"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <p className="text-muted-foreground text-xs">
+                Chỉ điền nếu cảm biến siêu âm đo khoảng cách tới mặt nước —
+                mực nước sẽ được tính bằng chiều cao này trừ khoảng cách đo
+                được.
+              </p>
             </div>
           )}
         </form.Field>
