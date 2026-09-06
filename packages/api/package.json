@@ -14,6 +14,7 @@
 		"@flood-bridge-alert/auth": "workspace:*",
 		"@flood-bridge-alert/db": "workspace:*",
 		"@flood-bridge-alert/env": "workspace:*",
+		"@flood-bridge-alert/config": "workspace:*",
 		"@orpc/client": "catalog:",
 		"@orpc/openapi": "catalog:",
 		"@orpc/server": "catalog:",
