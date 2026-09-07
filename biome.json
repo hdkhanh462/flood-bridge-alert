@@ -29,7 +29,8 @@
 			"!**/convex/_generated",
 			"!**/.claude/**/*",
 			"!**/.agents/**/*",
-			"!**/ui/**/components/**/*"
+			"!**/ui/**/components/**/*",
+			"biome.json",
 		]
 	},
 	"formatter": {
@@ -60,5 +61,10 @@
 		"parser": {
 			"tailwindDirectives": true
 		}
-	}
+	},
+	"json": {
+		"formatter": {
+			"trailingCommas": "none"
+		}
+	},
 }

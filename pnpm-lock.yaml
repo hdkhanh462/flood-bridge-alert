@@ -260,7 +260,13 @@ importers:
       vite:
         specifier: ^8.1.5
         version: 8.2.1(@types/node@22.20.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)
+      workbox-core:
+        specifier: ^7.4.1
+        version: 7.4.1
       workbox-precaching:
+        specifier: ^7.4.1
+        version: 7.4.1
+      workbox-routing:
         specifier: ^7.4.1
         version: 7.4.1
 
@@ -269,6 +275,9 @@ importers:
       '@flood-bridge-alert/auth':
         specifier: workspace:*
         version: link:../auth
+      '@flood-bridge-alert/config':
+        specifier: workspace:*
+        version: link:../config
       '@flood-bridge-alert/db':
         specifier: workspace:*
         version: link:../db
@@ -303,9 +312,6 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
-      '@flood-bridge-alert/config':
-        specifier: workspace:*
-        version: link:../config
       '@types/express':
         specifier: 'catalog:'
         version: 5.0.6

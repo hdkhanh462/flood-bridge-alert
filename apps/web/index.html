@@ -12,6 +12,13 @@
     />
     <title>Cầu An</title>
     <meta name="description" content="Cầu An is a web application" />
+    <!-- Cố định status bar sáng (nền trắng, icon đen) bất kể theme trong app.
+    Đã thử đồng bộ theme-color động theo theme sáng/tối nhưng không hoạt động
+    ổn định trên thiết bị thực tế (status bar vẫn sai màu icon tuỳ máy/bản
+    Android/Chrome) — chuyển sang giá trị tĩnh duy nhất để đảm bảo luôn đọc
+    được, đánh đổi việc status bar không đổi theo dark mode. -->
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#ffffff" />
   </head>
   <body>
     <div id="root"></div>

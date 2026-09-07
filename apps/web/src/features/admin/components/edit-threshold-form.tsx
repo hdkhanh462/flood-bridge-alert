@@ -7,7 +7,11 @@ import { Loader2 } from "lucide-react";
 import { thresholdSchema } from "../schemas";
 import type { AdminBridge } from "../types";
 
-type ThresholdFormValues = { safeMax: number; warningMax: number };
+type ThresholdFormValues = {
+  safeMax: number;
+  warningMax: number;
+  sensorHeight: string;
+};
 
 export function EditThresholdForm({
   bridge,
@@ -26,6 +30,8 @@ export function EditThresholdForm({
     defaultValues: {
       safeMax: bridge?.threshold?.safeMax ?? 0,
       warningMax: bridge?.threshold?.warningMax ?? 0,
+      sensorHeight:
+        bridge?.sensorHeight != null ? String(bridge.sensorHeight) : "",
     },
     onSubmit: handleSubmit,
     validators: {
@@ -87,6 +93,31 @@ export function EditThresholdForm({
                   {error?.message}
                 </p>
               ))}
+            </div>
+          )}
+        </form.Field>
+        <form.Field name="sensorHeight">
+          {(field) => (
+            <div className="grid gap-2">
+              <Label htmlFor={field.name}>
+                Chiều cao lắp đặt cảm biến (m)
+              </Label>
+              <Input
+                id={field.name}
+                name={field.name}
+                type="number"
+                step="any"
+                min={0}
+                placeholder="Bỏ trống nếu cảm biến gửi thẳng mực nước"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <p className="text-muted-foreground text-xs">
+                Chỉ điền nếu cảm biến siêu âm đo khoảng cách tới mặt nước —
+                mực nước sẽ được tính bằng chiều cao này trừ khoảng cách đo
+                được.
+              </p>
             </div>
           )}
         </form.Field>

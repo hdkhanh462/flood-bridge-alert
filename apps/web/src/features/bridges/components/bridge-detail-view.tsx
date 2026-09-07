@@ -39,7 +39,7 @@ export function BridgeDetailView() {
         Quay lại danh sách cầu
       </Button>
 
-      {bridge.isLoading ? (
+      {bridge.isLoading || (!bridge.data && !bridge.isFetched) ? (
         <Skeleton className="mt-2 h-8 w-64" />
       ) : bridge.data ? (
         <div className="mt-2 mb-6 flex flex-wrap items-center justify-between gap-2">
