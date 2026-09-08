@@ -25,6 +25,8 @@ export class BridgeNotFoundError extends Error {}
 export async function ingestBlynkReading(
   input: BlynkWebhookInput,
 ): Promise<WaterLevelReading> {
+  console.log("[blynk webhook] Nhận từ Blynk:", input);
+
   const result = await prisma.$transaction(async (tx) => {
     const bridge = await tx.bridge.findUnique({
       where: { id: input.bridgeId },
@@ -49,6 +51,11 @@ export async function ingestBlynkReading(
     const status = bridge.threshold
       ? determineBridgeStatus(level, bridge.threshold)
       : BridgeStatus.SAFE;
+
+    console.log(
+      `[blynk webhook] Cầu "${bridge.name}" (${bridge.id}) | sensorHeight=${bridge.sensorHeight ?? "null"} | ` +
+        `level nhận (input.level)=${input.level} -> level lưu DB=${level} | status=${status}`,
+    );
 
     const reading = await tx.waterLevelReading.create({
       data: {
