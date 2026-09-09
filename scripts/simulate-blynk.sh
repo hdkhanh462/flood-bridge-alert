@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Simulates a Blynk webhook call to test alerts/push notifications without real hardware.
 #
-# Required env vars (put them in a gitignored .env at the repo root instead of
-# typing them inline, so the token doesn't end up in shell history):
+# Required env vars — auto-loaded from infra/env/.env.prod (falls back to
+# infra/env/.env.dev if prod doesn't exist), or export them yourself:
 #   BLYNK_WEBHOOK_URL    e.g. https://api.hoangduongkhanh.id.vn/webhooks/blynk
 #   BLYNK_WEBHOOK_TOKEN  must match the server's BLYNK_WEBHOOK_TOKEN
 #
@@ -12,7 +12,12 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-if [ -f "$script_dir/infra/env/.env.dev" ]; then
+if [ -f "$script_dir/infra/env/.env.prod" ]; then
+	set -a
+	# shellcheck source=/dev/null
+	source "$script_dir/infra/env/.env.prod"
+	set +a
+elif [ -f "$script_dir/infra/env/.env.dev" ]; then
 	set -a
 	# shellcheck source=/dev/null
 	source "$script_dir/infra/env/.env.dev"
