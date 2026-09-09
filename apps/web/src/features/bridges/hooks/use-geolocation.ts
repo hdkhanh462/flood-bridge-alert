@@ -12,7 +12,7 @@ type GeolocationState =
 const CACHE_KEY = "bridges:last-known-location";
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
-function readCache(): Coords | null {
+function readCache(ignoreTtl = false): Coords | null {
   try {
     const raw = sessionStorage.getItem(CACHE_KEY);
     if (!raw) return null;
@@ -20,7 +20,7 @@ function readCache(): Coords | null {
       coords: Coords;
       timestamp: number;
     };
-    if (Date.now() - timestamp > CACHE_TTL_MS) return null;
+    if (!ignoreTtl && Date.now() - timestamp > CACHE_TTL_MS) return null;
     return coords;
   } catch {
     return null;
@@ -62,7 +62,22 @@ export function useGeolocation() {
         writeCache(coords);
         setState({ status: "granted", coords });
       },
-      () => setState({ status: "denied" }),
+      (error) => {
+        // Chỉ coi là "denied" khi người dùng thực sự từ chối quyền. Các lỗi
+        // khác (POSITION_UNAVAILABLE, TIMEOUT — thường gặp khi mất wifi vì
+        // trình duyệt còn dùng định vị hỗ trợ bởi mạng) không nên xoá dữ liệu
+        // cầu tràn đã tải trước đó; dùng lại vị trí cũ (bỏ qua TTL) nếu có.
+        if (error.code === GeolocationPositionError.PERMISSION_DENIED) {
+          setState({ status: "denied" });
+          return;
+        }
+        const staleCoords = readCache(true);
+        setState(
+          staleCoords
+            ? { status: "granted", coords: staleCoords }
+            : { status: "denied" },
+        );
+      },
     );
   }, []);
 

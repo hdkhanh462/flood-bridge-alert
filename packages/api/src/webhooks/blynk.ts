@@ -16,6 +16,10 @@ export const blynkWebhookInputSchema = z.object({
   // (xem firmware ESP32). Không phải mét như sensorHeight/threshold ở dưới.
   level: z.coerce.number().finite(),
   recordedAt: z.coerce.date().optional(),
+  // Cả ESP32 (gọi thẳng) lẫn Blynk automation (webhook khi datastream V1 đổi) đều
+  // gọi chung endpoint này; field này chỉ để ghi log phân biệt nguồn, không dùng
+  // để xác thực hay thay đổi cách xử lý.
+  source: z.string().optional(),
 });
 
 export type BlynkWebhookInput = z.infer<typeof blynkWebhookInputSchema>;
@@ -25,7 +29,10 @@ export class BridgeNotFoundError extends Error {}
 export async function ingestBlynkReading(
   input: BlynkWebhookInput,
 ): Promise<WaterLevelReading> {
-  console.log("[blynk webhook] Nhận từ Blynk:", input);
+  console.log(
+    `[blynk webhook] Nhận từ ${input.source ?? "(không rõ nguồn)"}:`,
+    input,
+  );
 
   const result = await prisma.$transaction(async (tx) => {
     const bridge = await tx.bridge.findUnique({
@@ -74,7 +81,9 @@ export async function ingestBlynkReading(
   });
 
   // Gửi push ngoài transaction vì đây là I/O bên ngoài, không nên giữ transaction DB chờ nó.
-  if (result.alert) {
+  // Chỉ báo khi vượt ngưỡng (WARNING/DANGER) — trạng thái SAFE vẫn lưu vào lịch sử để hiển thị
+  // "trở lại an toàn" nhưng không cần đẩy thông báo, tránh làm phiền khi cầu vẫn an toàn.
+  if (result.alert && result.alert.status !== BridgeStatus.SAFE) {
     await sendAlertPush(result.bridgeName, result.alert);
   }
 

@@ -61,6 +61,30 @@ export function NotificationToggle() {
     setEndpoint(null);
   }, [isSessionPending, session, endpoint]);
 
+  const reclaimMutation = useMutation(
+    orpc.pushSubscription.subscribe.mutationOptions(),
+  );
+
+  // Ngược lại: subscription trên trình duyệt còn đó nhưng thuộc về user KHÁC
+  // với session hiện tại (vd bật thông báo lúc chưa đăng nhập/đăng nhập tài
+  // khoản khác, sau đó đăng nhập tài khoản mới trên cùng trình duyệt mà chưa
+  // tắt/bật lại thông báo) — subscribe lại (upsert) để chuyển quyền sở hữu
+  // sang user hiện tại, tránh các thao tác quản lý (đổi cầu, mute...) bị
+  // NOT_FOUND do endpoint vẫn gắn với userId cũ trên server.
+  useEffect(() => {
+    if (isSessionPending || !session || endpoint === null) return;
+    navigator.serviceWorker.ready
+      .then((registration) => registration.pushManager.getSubscription())
+      .then((subscription) => {
+        const json = subscription?.toJSON();
+        if (!json?.endpoint || !json.keys?.p256dh || !json.keys?.auth) return;
+        reclaimMutation.mutate({
+          endpoint: json.endpoint,
+          keys: { p256dh: json.keys.p256dh, auth: json.keys.auth },
+        });
+      });
+  }, [isSessionPending, session, endpoint]);
+
   const bridges = useQuery({
     ...orpc.bridge.list.queryOptions(),
     enabled: subscribed,
