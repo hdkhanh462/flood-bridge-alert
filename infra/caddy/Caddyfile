@@ -1,8 +1,8 @@
-app.hoangduongkhanh.id.vn {
+safebridge.site {
 	reverse_proxy web:3000
 }
 
-api.hoangduongkhanh.id.vn {
+api.safebridge.site {
 	log {
 		output stdout
 		format console
