@@ -23,8 +23,8 @@ const FEATURES = [
   {
     to: "/guides/install",
     icon: Bell,
-    title: "Cảnh báo kịp thời",
-    description: "Thông báo khi mực nước vượt ngưỡng nguy hiểm.",
+    title: "Hướng dẫn cài đặt",
+    description: "Cài ứng dụng và bật thông báo khi mực nước vượt ngưỡng.",
     card: "bg-amber-50 border-amber-100 dark:bg-amber-950/30 dark:border-amber-900/50",
     iconWrap:
       "bg-amber-200/70 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
@@ -32,8 +32,8 @@ const FEATURES = [
   {
     to: "/guides/safety",
     icon: Users,
-    title: "Vì cộng đồng an toàn",
-    description: "Sáng kiến của học sinh THPT Phủ Thông.",
+    title: "Hướng dẫn an toàn",
+    description: "Cách di chuyển an toàn qua cầu tràn khi nước dâng.",
     card: "bg-green-50 border-green-100 dark:bg-green-950/30 dark:border-green-900/50",
     iconWrap:
       "bg-green-200/70 text-green-700 dark:bg-green-500/20 dark:text-green-300",
