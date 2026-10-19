@@ -115,7 +115,7 @@ export function HomeView() {
       </section>
 
       <div className="container mx-auto px-4">
-        <section className="relative z-10 -mt-8 grid gap-4 md:grid-cols-3">
+        <section className="grid gap-4 py-8 md:grid-cols-3">
           {FEATURES.map(
             ({ to, icon: Icon, title, description, card, iconWrap }) => (
               <Link
@@ -138,7 +138,14 @@ export function HomeView() {
                   <h2 className="font-semibold text-lg">{title}</h2>
                   <p className="text-muted-foreground text-sm">{description}</p>
                 </div>
-                <ArrowRight className="mt-auto h-5 w-5 shrink-0 self-end transition-transform group-hover:translate-x-1" />
+                <span
+                  className={cn(
+                    "mt-auto flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-full",
+                    iconWrap,
+                  )}
+                >
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
               </Link>
             ),
           )}
