@@ -83,7 +83,15 @@ export function HomeView() {
       <section className="relative isolate overflow-hidden bg-linear-to-br from-sky-800 via-sky-700 to-emerald-700">
         <div className="absolute inset-0 -z-10 bg-linear-to-r from-black/50 via-black/20 to-transparent" />
         <div className="container mx-auto flex min-h-105 flex-col items-start justify-center gap-4 px-4 py-16 text-white sm:min-h-135">
-          <Badge variant={healthCheck.data ? "success" : "outline"}>
+          <Badge
+            variant={healthCheck.data ? "success" : "outline"}
+            className={cn(
+              "border-transparent bg-white dark:bg-white",
+              healthCheck.data
+                ? "text-green-700 dark:text-green-700"
+                : "text-gray-800 dark:text-gray-800",
+            )}
+          >
             {healthCheck.isLoading
               ? "Đang kiểm tra kết nối..."
               : healthCheck.data
