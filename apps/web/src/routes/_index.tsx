@@ -1,5 +1,9 @@
 import { HomeView } from "@/features/home/components/home-view";
 
 export  function HomePage() {
-  return <HomeView />;
+  return (
+    <div>
+      <HomeView />
+    </div>
+  );
 }
